@@ -1,0 +1,109 @@
+using FluentValidation;
+using PLM.Application.DTOs;
+using PLM.Domain.Enums;
+
+namespace PLM.Application.Validators;
+
+public class ECOCreateValidator : AbstractValidator<ECOCreateDto>
+{
+    public ECOCreateValidator()
+    {
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Title is required")
+            .MaximumLength(200).WithMessage("Title cannot exceed 200 characters");
+
+        RuleFor(x => x.Description)
+            .NotEmpty().WithMessage("Description is required")
+            .MaximumLength(2000).WithMessage("Description cannot exceed 2000 characters");
+
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product must be selected");
+
+        RuleFor(x => x.EffectiveDate)
+            .GreaterThan(DateTime.UtcNow.Date).WithMessage("Effective date must be in the future");
+
+        RuleFor(x => x.Type)
+            .IsInEnum().WithMessage("Invalid ECO type");
+
+        // Product-type ECO validations
+        When(x => x.Type == ECOType.Product, () =>
+        {
+            RuleFor(x => x.ProposedCostPrice)
+                .NotNull().WithMessage("Cost price is required for Product ECO")
+                .GreaterThanOrEqualTo(0).WithMessage("Cost price must be non-negative");
+
+            RuleFor(x => x.ProposedSalePrice)
+                .NotNull().WithMessage("Sale price is required for Product ECO")
+                .GreaterThanOrEqualTo(0).WithMessage("Sale price must be non-negative");
+        });
+
+        // BoM-type ECO validations
+        When(x => x.Type == ECOType.BoM, () =>
+        {
+            RuleFor(x => x.BoMId)
+                .NotNull().WithMessage("BoM must be selected for BoM ECO")
+                .GreaterThan(0).WithMessage("Valid BoM must be selected");
+
+            RuleFor(x => x.ProposedComponents)
+                .NotNull().WithMessage("Components are required for BoM ECO")
+                .Must(c => c != null && c.Count > 0).WithMessage("At least one component is required");
+        });
+    }
+}
+
+public class ECOApprovalValidator : AbstractValidator<ECOApprovalCreateDto>
+{
+    public ECOApprovalValidator()
+    {
+        RuleFor(x => x.ECOId)
+            .GreaterThan(0).WithMessage("ECO must be specified");
+
+        RuleFor(x => x.Decision)
+            .IsInEnum().WithMessage("Invalid approval decision")
+            .NotEqual(ApprovalDecision.Pending).WithMessage("Decision must be Approved or Rejected");
+
+        RuleFor(x => x.Comments)
+            .NotEmpty().When(x => x.Decision == ApprovalDecision.Rejected)
+            .WithMessage("Comments are required when rejecting");
+    }
+}
+
+public class ProductCreateValidator : AbstractValidator<ProductCreateDto>
+{
+    public ProductCreateValidator()
+    {
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Product name is required")
+            .MaximumLength(200).WithMessage("Name cannot exceed 200 characters");
+
+        RuleFor(x => x.CostPrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Cost price must be non-negative");
+
+        RuleFor(x => x.SalePrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Sale price must be non-negative");
+    }
+}
+
+public class BoMCreateValidator : AbstractValidator<BoMCreateDto>
+{
+    public BoMCreateValidator()
+    {
+        RuleFor(x => x.ProductId)
+            .GreaterThan(0).WithMessage("Product must be selected");
+
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("BoM name is required")
+            .MaximumLength(200).WithMessage("Name cannot exceed 200 characters");
+
+        RuleFor(x => x.Components)
+            .NotNull().WithMessage("Components are required")
+            .Must(c => c.Count > 0).WithMessage("At least one component is required");
+
+        RuleForEach(x => x.Components).ChildRules(comp =>
+        {
+            comp.RuleFor(c => c.ComponentName).NotEmpty().WithMessage("Component name is required");
+            comp.RuleFor(c => c.Quantity).GreaterThan(0).WithMessage("Quantity must be positive");
+            comp.RuleFor(c => c.UnitCost).GreaterThanOrEqualTo(0).WithMessage("Unit cost must be non-negative");
+        });
+    }
+}

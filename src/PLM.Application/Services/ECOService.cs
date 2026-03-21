@@ -1,0 +1,436 @@
+using System.Text.Json;
+using AutoMapper;
+using PLM.Application.DTOs;
+using PLM.Application.Interfaces;
+using PLM.Domain.Entities;
+using PLM.Domain.Enums;
+using PLM.Domain.Interfaces;
+
+namespace PLM.Application.Services;
+
+public class ECOService : IECOService
+{
+    private readonly IECORepository _ecoRepo;
+    private readonly IProductRepository _productRepo;
+    private readonly IProductVersionRepository _productVersionRepo;
+    private readonly IBoMRepository _bomRepo;
+    private readonly IBoMVersionRepository _bomVersionRepo;
+    private readonly IAuditService _auditService;
+    private readonly IMapper _mapper;
+
+    public ECOService(
+        IECORepository ecoRepo,
+        IProductRepository productRepo,
+        IProductVersionRepository productVersionRepo,
+        IBoMRepository bomRepo,
+        IBoMVersionRepository bomVersionRepo,
+        IAuditService auditService,
+        IMapper mapper)
+    {
+        _ecoRepo = ecoRepo;
+        _productRepo = productRepo;
+        _productVersionRepo = productVersionRepo;
+        _bomRepo = bomRepo;
+        _bomVersionRepo = bomVersionRepo;
+        _auditService = auditService;
+        _mapper = mapper;
+    }
+
+    public async Task<ECODto?> GetByIdAsync(int id)
+    {
+        var eco = await _ecoRepo.GetByIdWithApprovalsAsync(id);
+        return eco == null ? null : _mapper.Map<ECODto>(eco);
+    }
+
+    public async Task<(List<ECODto> Items, int TotalCount)> GetPagedAsync(
+        int page, int pageSize, string? stageFilter = null, string? typeFilter = null)
+    {
+        ECOStage? stage = null;
+        ECOType? type = null;
+
+        if (Enum.TryParse<ECOStage>(stageFilter, out var parsedStage))
+            stage = parsedStage;
+        if (Enum.TryParse<ECOType>(typeFilter, out var parsedType))
+            type = parsedType;
+
+        var (items, totalCount) = await _ecoRepo.GetPagedAsync(page, pageSize, stage, type);
+        return (_mapper.Map<List<ECODto>>(items), totalCount);
+    }
+
+    public async Task<ECODto> CreateAsync(ECOCreateDto dto, string userId, string userName)
+    {
+        var eco = _mapper.Map<ECO>(dto);
+        eco.Stage = ECOStage.New;
+        eco.CreatedBy = userName;
+        eco.CreatedAt = DateTime.UtcNow;
+        eco.UpdatedAt = DateTime.UtcNow;
+
+        // Serialize proposed BoM changes as JSON
+        if (dto.ProposedComponents != null)
+            eco.ProposedComponents = JsonSerializer.Serialize(dto.ProposedComponents);
+        if (dto.ProposedOperations != null)
+            eco.ProposedOperations = JsonSerializer.Serialize(dto.ProposedOperations);
+
+        var created = await _ecoRepo.AddAsync(eco);
+
+        await _auditService.LogAsync(
+            "ECO Created",
+            "ECO",
+            created.Id,
+            null,
+            $"Title: {created.Title}, Type: {created.Type}, Product: {created.ProductId}",
+            userId,
+            userName);
+
+        return _mapper.Map<ECODto>(await _ecoRepo.GetByIdWithApprovalsAsync(created.Id));
+    }
+
+    public async Task SubmitAsync(int ecoId, string userId, string userName)
+    {
+        var eco = await _ecoRepo.GetByIdAsync(ecoId)
+            ?? throw new InvalidOperationException("ECO not found");
+
+        if (eco.Stage != ECOStage.New && eco.Stage != ECOStage.Rejected)
+            throw new InvalidOperationException("ECO can only be submitted from New or Rejected stage");
+
+        eco.Stage = ECOStage.Approval;
+        eco.UpdatedAt = DateTime.UtcNow;
+        await _ecoRepo.UpdateAsync(eco);
+
+        await _auditService.LogAsync(
+            "ECO Submitted",
+            "ECO",
+            ecoId,
+            ECOStage.New.ToString(),
+            ECOStage.Approval.ToString(),
+            userId,
+            userName);
+    }
+
+    public async Task ApproveAsync(ECOApprovalCreateDto dto, string userId, string userName)
+    {
+        var eco = await _ecoRepo.GetByIdWithApprovalsAsync(dto.ECOId)
+            ?? throw new InvalidOperationException("ECO not found");
+
+        if (eco.Stage != ECOStage.Approval)
+            throw new InvalidOperationException("ECO is not in Approval stage");
+
+        // Record the approval
+        var approval = new ECOApproval
+        {
+            ECOId = dto.ECOId,
+            ApproverId = userId,
+            ApproverName = userName,
+            Decision = ApprovalDecision.Approved,
+            Comments = dto.Comments,
+            ApprovedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+        eco.Approvals.Add(approval);
+
+        // Apply the changes
+        await ApplyChangesAsync(eco, userId, userName);
+
+        eco.Stage = ECOStage.Done;
+        eco.UpdatedAt = DateTime.UtcNow;
+        await _ecoRepo.UpdateAsync(eco);
+
+        await _auditService.LogAsync(
+            "ECO Approved",
+            "ECO",
+            dto.ECOId,
+            ECOStage.Approval.ToString(),
+            ECOStage.Done.ToString(),
+            userId,
+            userName);
+    }
+
+    public async Task RejectAsync(ECOApprovalCreateDto dto, string userId, string userName)
+    {
+        var eco = await _ecoRepo.GetByIdWithApprovalsAsync(dto.ECOId)
+            ?? throw new InvalidOperationException("ECO not found");
+
+        if (eco.Stage != ECOStage.Approval)
+            throw new InvalidOperationException("ECO is not in Approval stage");
+
+        var approval = new ECOApproval
+        {
+            ECOId = dto.ECOId,
+            ApproverId = userId,
+            ApproverName = userName,
+            Decision = ApprovalDecision.Rejected,
+            Comments = dto.Comments,
+            ApprovedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+        eco.Approvals.Add(approval);
+
+        eco.Stage = ECOStage.Rejected;
+        eco.UpdatedAt = DateTime.UtcNow;
+        await _ecoRepo.UpdateAsync(eco);
+
+        await _auditService.LogAsync(
+            "ECO Rejected",
+            "ECO",
+            dto.ECOId,
+            ECOStage.Approval.ToString(),
+            ECOStage.Rejected.ToString(),
+            userId,
+            userName);
+    }
+
+    public async Task<List<ECODto>> GetPendingApprovalsAsync()
+    {
+        var ecos = await _ecoRepo.GetPendingApprovalsAsync();
+        return _mapper.Map<List<ECODto>>(ecos);
+    }
+
+    public async Task<List<ComparisonDto>> GetComparisonAsync(int ecoId)
+    {
+        var eco = await _ecoRepo.GetByIdWithApprovalsAsync(ecoId)
+            ?? throw new InvalidOperationException("ECO not found");
+
+        var comparisons = new List<ComparisonDto>();
+
+        if (eco.Type == ECOType.Product)
+        {
+            var activeVersion = await _productVersionRepo.GetActiveVersionAsync(eco.ProductId);
+            if (activeVersion != null)
+            {
+                comparisons.Add(new ComparisonDto
+                {
+                    FieldName = "Cost Price",
+                    OldValue = activeVersion.CostPrice.ToString("C"),
+                    NewValue = eco.ProposedCostPrice?.ToString("C") ?? "N/A",
+                    ChangeType = activeVersion.CostPrice != eco.ProposedCostPrice ? "Modified" : "Unchanged"
+                });
+                comparisons.Add(new ComparisonDto
+                {
+                    FieldName = "Sale Price",
+                    OldValue = activeVersion.SalePrice.ToString("C"),
+                    NewValue = eco.ProposedSalePrice?.ToString("C") ?? "N/A",
+                    ChangeType = activeVersion.SalePrice != eco.ProposedSalePrice ? "Modified" : "Unchanged"
+                });
+            }
+        }
+        else if (eco.Type == ECOType.BoM && eco.BoMId.HasValue)
+        {
+            var activeVersion = await _bomVersionRepo.GetActiveVersionAsync(eco.BoMId.Value);
+            if (activeVersion != null && eco.ProposedComponents != null)
+            {
+                var currentComponents = activeVersion.Components.ToList();
+                var proposedComponents = JsonSerializer.Deserialize<List<BoMComponentDto>>(eco.ProposedComponents) ?? new();
+
+                // Compare components
+                var allComponentNames = currentComponents.Select(c => c.ComponentName)
+                    .Union(proposedComponents.Select(c => c.ComponentName))
+                    .Distinct();
+
+                foreach (var name in allComponentNames)
+                {
+                    var current = currentComponents.FirstOrDefault(c => c.ComponentName == name);
+                    var proposed = proposedComponents.FirstOrDefault(c => c.ComponentName == name);
+
+                    if (current == null)
+                    {
+                        comparisons.Add(new ComparisonDto
+                        {
+                            FieldName = $"Component: {name}",
+                            OldValue = null,
+                            NewValue = $"Qty: {proposed!.Quantity}, Cost: {proposed.UnitCost:C}",
+                            ChangeType = "Added"
+                        });
+                    }
+                    else if (proposed == null)
+                    {
+                        comparisons.Add(new ComparisonDto
+                        {
+                            FieldName = $"Component: {name}",
+                            OldValue = $"Qty: {current.Quantity}, Cost: {current.UnitCost:C}",
+                            NewValue = null,
+                            ChangeType = "Removed"
+                        });
+                    }
+                    else if (current.Quantity != proposed.Quantity || current.UnitCost != proposed.UnitCost)
+                    {
+                        comparisons.Add(new ComparisonDto
+                        {
+                            FieldName = $"Component: {name}",
+                            OldValue = $"Qty: {current.Quantity}, Cost: {current.UnitCost:C}",
+                            NewValue = $"Qty: {proposed.Quantity}, Cost: {proposed.UnitCost:C}",
+                            ChangeType = "Modified"
+                        });
+                    }
+                    else
+                    {
+                        comparisons.Add(new ComparisonDto
+                        {
+                            FieldName = $"Component: {name}",
+                            OldValue = $"Qty: {current.Quantity}, Cost: {current.UnitCost:C}",
+                            NewValue = $"Qty: {proposed.Quantity}, Cost: {proposed.UnitCost:C}",
+                            ChangeType = "Unchanged"
+                        });
+                    }
+                }
+            }
+        }
+
+        return comparisons;
+    }
+
+    public async Task<DashboardDto> GetDashboardAsync()
+    {
+        var products = await _productRepo.GetAllAsync();
+        var pendingCount = await _ecoRepo.GetCountByStageAsync(ECOStage.Approval);
+        var approvedCount = await _ecoRepo.GetCountByStageAsync(ECOStage.Done);
+        var rejectedCount = await _ecoRepo.GetCountByStageAsync(ECOStage.Rejected);
+        var recentEcos = await _ecoRepo.GetAllAsync();
+
+        return new DashboardDto
+        {
+            TotalProducts = products.Count,
+            ActiveProducts = products.Count(p => p.Status == Status.Active),
+            TotalBoMs = products.Sum(p => p.BoMs?.Count ?? 0),
+            PendingECOs = pendingCount,
+            ApprovedECOs = approvedCount,
+            RejectedECOs = rejectedCount,
+            RecentECOs = _mapper.Map<List<ECODto>>(recentEcos.Take(5).ToList())
+        };
+    }
+
+    private async Task ApplyChangesAsync(ECO eco, string userId, string userName)
+    {
+        if (!eco.CreateNewVersion) return;
+
+        if (eco.Type == ECOType.Product)
+        {
+            await ApplyProductChangesAsync(eco, userId, userName);
+        }
+        else if (eco.Type == ECOType.BoM && eco.BoMId.HasValue)
+        {
+            await ApplyBoMChangesAsync(eco, userId, userName);
+        }
+    }
+
+    private async Task ApplyProductChangesAsync(ECO eco, string userId, string userName)
+    {
+        var product = await _productRepo.GetByIdWithVersionsAsync(eco.ProductId)
+            ?? throw new InvalidOperationException("Product not found");
+
+        // Archive current active version
+        var currentVersion = product.Versions.FirstOrDefault(v => v.IsActive);
+        string? oldValue = null;
+        if (currentVersion != null)
+        {
+            oldValue = $"Cost: {currentVersion.CostPrice:C}, Sale: {currentVersion.SalePrice:C}";
+            currentVersion.IsActive = false;
+            await _productVersionRepo.UpdateAsync(currentVersion);
+        }
+
+        // Create new version
+        var newVersionNumber = product.CurrentVersionNumber + 1;
+        var newVersion = new ProductVersion
+        {
+            ProductId = product.Id,
+            VersionNumber = newVersionNumber,
+            CostPrice = eco.ProposedCostPrice ?? currentVersion?.CostPrice ?? 0,
+            SalePrice = eco.ProposedSalePrice ?? currentVersion?.SalePrice ?? 0,
+            IsActive = true,
+            ChangeDescription = $"ECO-{eco.Id}: {eco.Title}",
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = userName
+        };
+
+        await _productVersionRepo.AddAsync(newVersion);
+
+        product.CurrentVersionNumber = newVersionNumber;
+        product.UpdatedAt = DateTime.UtcNow;
+        await _productRepo.UpdateAsync(product);
+
+        var newValue = $"Cost: {newVersion.CostPrice:C}, Sale: {newVersion.SalePrice:C}";
+
+        await _auditService.LogAsync(
+            "Product Version Created",
+            "Product",
+            product.Id,
+            oldValue,
+            newValue,
+            userId,
+            userName);
+    }
+
+    private async Task ApplyBoMChangesAsync(ECO eco, string userId, string userName)
+    {
+        var bom = await _bomRepo.GetByIdWithVersionsAsync(eco.BoMId!.Value)
+            ?? throw new InvalidOperationException("BoM not found");
+
+        // Archive current active version
+        var currentVersion = bom.Versions.FirstOrDefault(v => v.IsActive);
+        if (currentVersion != null)
+        {
+            currentVersion.IsActive = false;
+            await _bomVersionRepo.UpdateAsync(currentVersion);
+        }
+
+        // Create new version
+        var newVersionNumber = bom.CurrentVersionNumber + 1;
+        var newVersion = new BoMVersion
+        {
+            BoMId = bom.Id,
+            VersionNumber = newVersionNumber,
+            IsActive = true,
+            ChangeDescription = $"ECO-{eco.Id}: {eco.Title}",
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = userName
+        };
+
+        // Deserialize proposed components
+        if (eco.ProposedComponents != null)
+        {
+            var proposedComponents = JsonSerializer.Deserialize<List<BoMComponentDto>>(eco.ProposedComponents);
+            if (proposedComponents != null)
+            {
+                newVersion.Components = proposedComponents.Select(c => new BoMComponent
+                {
+                    ComponentName = c.ComponentName,
+                    PartNumber = c.PartNumber,
+                    Quantity = c.Quantity,
+                    UnitCost = c.UnitCost,
+                    Unit = c.Unit
+                }).ToList();
+            }
+        }
+
+        // Deserialize proposed operations
+        if (eco.ProposedOperations != null)
+        {
+            var proposedOperations = JsonSerializer.Deserialize<List<BoMOperationDto>>(eco.ProposedOperations);
+            if (proposedOperations != null)
+            {
+                newVersion.Operations = proposedOperations.Select(o => new BoMOperation
+                {
+                    OperationName = o.OperationName,
+                    Description = o.Description,
+                    SequenceOrder = o.SequenceOrder,
+                    EstimatedTime = o.EstimatedTime,
+                    WorkCenter = o.WorkCenter
+                }).ToList();
+            }
+        }
+
+        await _bomVersionRepo.AddAsync(newVersion);
+
+        bom.CurrentVersionNumber = newVersionNumber;
+        bom.UpdatedAt = DateTime.UtcNow;
+        await _bomRepo.UpdateAsync(bom);
+
+        await _auditService.LogAsync(
+            "BoM Version Created",
+            "BoM",
+            bom.Id,
+            $"Version {currentVersion?.VersionNumber ?? 0}",
+            $"Version {newVersionNumber}",
+            userId,
+            userName);
+    }
+}

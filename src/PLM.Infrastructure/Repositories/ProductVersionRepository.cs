@@ -1,0 +1,39 @@
+using Microsoft.EntityFrameworkCore;
+using PLM.Domain.Entities;
+using PLM.Domain.Interfaces;
+using PLM.Infrastructure.Data;
+
+namespace PLM.Infrastructure.Repositories;
+
+public class ProductVersionRepository : IProductVersionRepository
+{
+    private readonly PlmDbContext _context;
+
+    public ProductVersionRepository(PlmDbContext context) => _context = context;
+
+    public async Task<ProductVersion?> GetByIdAsync(int id)
+        => await _context.ProductVersions.FindAsync(id);
+
+    public async Task<IReadOnlyList<ProductVersion>> GetByProductIdAsync(int productId)
+        => await _context.ProductVersions
+            .Where(v => v.ProductId == productId)
+            .OrderByDescending(v => v.VersionNumber)
+            .ToListAsync();
+
+    public async Task<ProductVersion?> GetActiveVersionAsync(int productId)
+        => await _context.ProductVersions
+            .FirstOrDefaultAsync(v => v.ProductId == productId && v.IsActive);
+
+    public async Task<ProductVersion> AddAsync(ProductVersion version)
+    {
+        _context.ProductVersions.Add(version);
+        await _context.SaveChangesAsync();
+        return version;
+    }
+
+    public async Task UpdateAsync(ProductVersion version)
+    {
+        _context.ProductVersions.Update(version);
+        await _context.SaveChangesAsync();
+    }
+}

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PLM.Application/PLM.Application.csproj" />
+    <Project Path="src/PLM.Domain/PLM.Domain.csproj" />
+    <Project Path="src/PLM.Infrastructure/PLM.Infrastructure.csproj" />
+    <Project Path="src/PLM.Web/PLM.Web.csproj" />
+  </Folder>
+</Solution>

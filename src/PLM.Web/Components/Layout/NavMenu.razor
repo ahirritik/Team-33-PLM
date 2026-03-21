@@ -1,0 +1,39 @@
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+    
+    <MudNavGroup Title="Products & BoMs" Expanded="true" Icon="@Icons.Material.Filled.Inventory">
+        <MudNavLink Href="/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Products</MudNavLink>
+        <MudNavLink Href="/boms" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccountTree">Bills of Material</MudNavLink>
+    </MudNavGroup>
+    
+    <MudNavGroup Title="Change Management" Expanded="true" Icon="@Icons.Material.Filled.CompareArrows">
+        <MudNavLink Href="/eco/list" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ListAlt">All Change Orders</MudNavLink>
+        <AuthorizeView Roles="Engineering,Admin">
+            <MudNavLink Href="/eco/create" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Create ECO</MudNavLink>
+        </AuthorizeView>
+        <AuthorizeView Roles="Approver,Admin">
+            <MudNavLink Href="/eco/approvals" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Approval">Pending Approvals</MudNavLink>
+        </AuthorizeView>
+    </MudNavGroup>
+    
+    <MudNavLink Href="/reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Assessment">Reports</MudNavLink>
+    
+    <MudDivider Class="my-2" />
+    
+    <AuthorizeView>
+        <Authorized>
+            <div class="px-4 py-2">
+                <MudText Typo="Typo.body2">Logged in as:</MudText>
+                <MudText Typo="Typo.subtitle2" Class="mb-2">@context.User.Identity?.Name</MudText>
+                <form action="/Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="/" />
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Error" FullWidth="true" Size="Size.Small">Log out</MudButton>
+                </form>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="/Account/Login" Icon="@Icons.Material.Filled.Login">Log in</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudNavMenu>

@@ -1,0 +1,75 @@
+using Microsoft.EntityFrameworkCore;
+using PLM.Domain.Entities;
+using PLM.Domain.Enums;
+using PLM.Domain.Interfaces;
+using PLM.Infrastructure.Data;
+
+namespace PLM.Infrastructure.Repositories;
+
+public class ProductRepository : IProductRepository
+{
+    private readonly PlmDbContext _context;
+
+    public ProductRepository(PlmDbContext context) => _context = context;
+
+    public async Task<Product?> GetByIdAsync(int id)
+        => await _context.Products.FindAsync(id);
+
+    public async Task<Product?> GetByIdWithVersionsAsync(int id)
+        => await _context.Products
+            .Include(p => p.Versions.OrderByDescending(v => v.VersionNumber))
+            .Include(p => p.BoMs)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+    public async Task<IReadOnlyList<Product>> GetAllAsync(Status? status = null)
+    {
+        var query = _context.Products
+            .Include(p => p.Versions.Where(v => v.IsActive))
+            .Include(p => p.BoMs)
+            .AsQueryable();
+
+        if (status.HasValue)
+            query = query.Where(p => p.Status == status.Value);
+
+        return await query.OrderByDescending(p => p.UpdatedAt).ToListAsync();
+    }
+
+    public async Task<(IReadOnlyList<Product> Items, int TotalCount)> GetPagedAsync(
+        int page, int pageSize, string? search = null, Status? status = null)
+    {
+        var query = _context.Products
+            .Include(p => p.Versions.Where(v => v.IsActive))
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(p => p.Name.Contains(search) || p.Description.Contains(search));
+
+        if (status.HasValue)
+            query = query.Where(p => p.Status == status.Value);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(p => p.UpdatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    public async Task<Product> AddAsync(Product product)
+    {
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return product;
+    }
+
+    public async Task UpdateAsync(Product product)
+    {
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(int id)
+        => await _context.Products.AnyAsync(p => p.Id == id);
+}

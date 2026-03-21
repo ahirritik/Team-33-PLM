@@ -1,0 +1,38 @@
+using PLM.Domain.Enums;
+
+namespace PLM.Domain.Entities;
+
+public class ECO
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public ECOType Type { get; set; }
+    public ECOStage Stage { get; set; } = ECOStage.New;
+
+    // Related entities
+    public int ProductId { get; set; }
+    public int? BoMId { get; set; }
+
+    // Change details
+    public DateTime EffectiveDate { get; set; }
+    public bool CreateNewVersion { get; set; } = true;
+
+    // For Product changes
+    public decimal? ProposedCostPrice { get; set; }
+    public decimal? ProposedSalePrice { get; set; }
+
+    // For BoM changes — stored as JSON
+    public string? ProposedComponents { get; set; }
+    public string? ProposedOperations { get; set; }
+
+    // Metadata
+    public string CreatedBy { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navigation properties
+    public Product Product { get; set; } = null!;
+    public BoM? BoM { get; set; }
+    public ICollection<ECOApproval> Approvals { get; set; } = new List<ECOApproval>();
+}

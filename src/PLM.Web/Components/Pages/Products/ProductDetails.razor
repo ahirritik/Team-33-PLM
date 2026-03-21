@@ -1,0 +1,194 @@
+@page "/products/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@attribute [Authorize]
+
+<PageTitle>Product Details - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+
+    @if (_product == null && _isLoading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (_product == null)
+    {
+        <MudAlert Severity="Severity.Error">Product not found.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+            <!-- Product Information -->
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@_product.Name</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">ID: PRD-@_product.Id.ToString("D5")</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            @if (_product.Status == PLM.Domain.Enums.Status.Active)
+                            {
+                                <MudChip T="string" Color="Color.Success" Size="Size.Small">Active</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip T="string" Color="Color.Default" Size="Size.Small">Archived</MudChip>
+                            }
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudText Typo="Typo.body1" Class="mb-4">@_product.Description</MudText>
+                        
+                        <MudDivider Class="my-3" />
+                        
+                        <div class="d-flex justify-space-between mb-2">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">Current Version</MudText>
+                            <MudText Typo="Typo.subtitle1" Class="font-weight-bold">v@_product.CurrentVersionNumber</MudText>
+                        </div>
+                        
+                        @if (_activeVersion != null)
+                        {
+                            <div class="d-flex justify-space-between mb-2">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Cost Price (Est)</MudText>
+                                <MudText Typo="Typo.body2">@_activeVersion.CostPrice.ToString("C")</MudText>
+                            </div>
+                            <div class="d-flex justify-space-between mb-4">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">Target Sale Price</MudText>
+                                <MudText Typo="Typo.body2">@_activeVersion.SalePrice.ToString("C")</MudText>
+                            </div>
+                        }
+
+                        <MudDivider Class="my-3" />
+                        
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Created: @_product.CreatedAt.ToString("g")</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Updated: @_product.UpdatedAt.ToString("g")</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <AuthorizeView Roles="Engineering,Admin">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true" StartIcon="@Icons.Material.Filled.Edit" 
+                                       Href="@($"/eco/create?type=Product&productId={_product.Id}")">
+                                Modify via ECO
+                            </MudButton>
+                        </AuthorizeView>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <!-- Linked BoMs & History -->
+            <MudItem xs="12" md="8">
+                <MudTabs Elevation="3" Rounded="true" ApplyEffectsToContainer="true">
+                    <MudTabPanel Text="Linked BoMs" Icon="@Icons.Material.Filled.AccountTree">
+                        @if (_boms == null || !_boms.Any())
+                        {
+                            <div class="text-center py-8">
+                                <MudText Typo="Typo.subtitle1" Color="Color.Secondary">No Bills of Material linked to this product.</MudText>
+                                <AuthorizeView Roles="Engineering,Admin">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" StartIcon="@Icons.Material.Filled.Add"
+                                               Href="@($"/eco/create?type=BoM&productId={_product.Id}")">
+                                        Create First BoM via ECO
+                                    </MudButton>
+                                </AuthorizeView>
+                            </div>
+                        }
+                        else
+                        {
+                            <MudTable Items="@_boms" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>ID</MudTh>
+                                    <MudTh>BoM Name</MudTh>
+                                    <MudTh>Version</MudTh>
+                                    <MudTh>Status</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="ID">BOM-@context.Id.ToString("D5")</MudTd>
+                                    <MudTd DataLabel="BoM Name">@context.Name</MudTd>
+                                    <MudTd DataLabel="Version">v@context.CurrentVersionNumber</MudTd>
+                                    <MudTd DataLabel="Status">
+                                        @if(context.Status == PLM.Domain.Enums.Status.Active) { <MudChip T="string" Color="Color.Success" Size="Size.Small">Active</MudChip> }
+                                        else { <MudChip T="string" Color="Color.Default" Size="Size.Small">Archived</MudChip> }
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <MudButton Size="Size.Small" Color="Color.Primary" Href="@($"/boms/{context.Id}")">View</MudButton>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                    </MudTabPanel>
+                    <MudTabPanel Text="Version History" Icon="@Icons.Material.Filled.History">
+                        <MudTimeline TimelinePosition="TimelinePosition.Left">
+                            @foreach (var version in _versions.OrderByDescending(v => v.VersionNumber))
+                            {
+                                <MudTimelineItem Color="@(version.IsActive ? Color.Success : Color.Default)" Size="Size.Small">
+                                    <ItemContent>
+                                        <MudPaper Elevation="0" Class="pa-4 rounded bg-light">
+                                            <div class="d-flex justify-space-between">
+                                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                                                    Version @version.VersionNumber
+                                                    @if (version.IsActive) { <MudChip T="string" Color="Color.Success" Size="Size.Small" Class="ml-2">Active</MudChip> }
+                                                </MudText>
+                                                <MudText Typo="Typo.caption" Color="Color.Secondary">@version.CreatedAt.ToString("MMM dd, yyyy HH:mm")</MudText>
+                                            </div>
+                                            <MudText Typo="Typo.body2" Class="mt-2 text-muted">@version.ChangeDescription</MudText>
+                                            <div class="d-flex gap-4 mt-3">
+                                                <MudText Typo="Typo.caption">Cost: @version.CostPrice.ToString("C")</MudText>
+                                                <MudText Typo="Typo.caption">Sale: @version.SalePrice.ToString("C")</MudText>
+                                                <MudText Typo="Typo.caption">By: @version.CreatedBy</MudText>
+                                            </div>
+                                        </MudPaper>
+                                    </ItemContent>
+                                </MudTimelineItem>
+                            }
+                        </MudTimeline>
+                    </MudTabPanel>
+                </MudTabs>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private ProductDto? _product;
+    private ProductVersionDto? _activeVersion;
+    private List<ProductVersionDto> _versions = new();
+    private List<BoMDto> _boms = new();
+    
+    private bool _isLoading = true;
+    
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    @inject IBoMService BoMService
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs.Add(new BreadcrumbItem("Dashboard", href: "/"));
+        _breadcrumbs.Add(new BreadcrumbItem("Products", href: "/products"));
+        
+        await LoadProductAsync();
+    }
+
+    private async Task LoadProductAsync()
+    {
+        _isLoading = true;
+        _product = await ProductService.GetByIdAsync(Id);
+        
+        if (_product != null)
+        {
+            _activeVersion = _product.ActiveVersion;
+            _breadcrumbs.Add(new BreadcrumbItem(_product.Name, href: null, disabled: true));
+            
+            _versions = await ProductService.GetVersionHistoryAsync(Id);
+            _boms = await BoMService.GetByProductIdAsync(Id);
+        }
+        
+        _isLoading = false;
+    }
+}

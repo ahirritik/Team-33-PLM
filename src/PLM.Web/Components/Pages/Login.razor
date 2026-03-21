@@ -1,0 +1,53 @@
+@page "/Account/Login"
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Log in</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudPaper Elevation="3" Class="pa-8">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">Sign In</MudText>
+        
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@ErrorMessage</MudAlert>
+        }
+
+        <form action="/Account/PerformLogin" method="post">
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+            
+            <div style="margin-bottom: 16px;">
+                <input type="email" name="email" placeholder="Email Address" required 
+                       style="width: 100%; padding: 16px 14px; border-radius: 4px; border: 1px solid var(--mud-palette-lines-default); background: transparent; color: var(--mud-palette-text-primary);" />
+            </div>
+                          
+            <div style="margin-bottom: 24px;">
+                <input type="password" name="password" placeholder="Password" required 
+                       style="width: 100%; padding: 16px 14px; border-radius: 4px; border: 1px solid var(--mud-palette-lines-default); background: transparent; color: var(--mud-palette-text-primary);" />
+            </div>
+
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true">
+                Log in
+            </MudButton>
+        </form>
+
+        <MudDivider Class="my-6" />
+
+        <MudText Typo="Typo.body2" Class="mb-2">Demo Accounts:</MudText>
+        <MudText Typo="Typo.caption" Class="d-block mb-1"><b>Admin:</b> admin@plm.com / Admin@123</MudText>
+        <MudText Typo="Typo.caption" Class="d-block mb-1"><b>Engineering:</b> engineer@plm.com / Eng@12345</MudText>
+        <MudText Typo="Typo.caption" Class="d-block mb-1"><b>Approver:</b> approver@plm.com / App@12345</MudText>
+        <MudText Typo="Typo.caption" Class="d-block mb-1"><b>Operations:</b> operations@plm.com / Ops@12345</MudText>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromQuery(Name = "error")]
+    public string? ErrorMessage { get; set; }
+
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+}

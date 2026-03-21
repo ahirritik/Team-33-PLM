@@ -1,0 +1,12 @@
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\bin\Debug\net10.0\PLM.Domain.deps.json
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\bin\Debug\net10.0\PLM.Domain.dll
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\bin\Debug\net10.0\PLM.Domain.pdb
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.csproj.AssemblyReference.cache
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.AssemblyInfoInputs.cache
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.AssemblyInfo.cs
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.csproj.CoreCompileInputs.cache
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.dll
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\refint\PLM.Domain.dll
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\PLM.Domain.pdb
+C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Domain\obj\Debug\net10.0\ref\PLM.Domain.dll

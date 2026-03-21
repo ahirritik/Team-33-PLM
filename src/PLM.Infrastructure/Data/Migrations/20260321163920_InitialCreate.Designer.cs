@@ -9,10 +9,10 @@ using PLM.Infrastructure.Data;
 
 #nullable disable
 
-namespace PLM.Infrastructure.Migrations
+namespace PLM.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(PlmDbContext))]
-    [Migration("20260321144544_InitialCreate")]
+    [Migration("20260321163920_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

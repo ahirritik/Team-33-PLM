@@ -8,7 +8,7 @@ using PLM.Infrastructure.Data;
 
 #nullable disable
 
-namespace PLM.Infrastructure.Migrations
+namespace PLM.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(PlmDbContext))]
     partial class PlmDbContextModelSnapshot : ModelSnapshot

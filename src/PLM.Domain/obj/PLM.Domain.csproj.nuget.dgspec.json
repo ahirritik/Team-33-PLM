@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Domain\\PLM.Domain.csproj": {}
+    "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Domain\\PLM.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Domain\\PLM.Domain.csproj": {
+    "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Domain\\PLM.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Domain\\PLM.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Domain\\PLM.Domain.csproj",
         "projectName": "PLM.Domain",
-        "projectPath": "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Domain\\PLM.Domain.csproj",
+        "projectPath": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Domain\\PLM.Domain.csproj",
         "packagesPath": "C:\\Users\\avadi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Domain\\obj\\",
+        "outputPath": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

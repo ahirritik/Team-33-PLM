@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ZFJsBrKgCt8=",
+  "dgSpecHash": "s+Cf2DqPp3c=",
   "success": true,
-  "projectFilePath": "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Application\\PLM.Application.csproj",
+  "projectFilePath": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Application\\PLM.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\avadi\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\avadi\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",

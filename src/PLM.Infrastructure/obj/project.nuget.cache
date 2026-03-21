@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IV0rvfn2zIs=",
+  "dgSpecHash": "NDWdjo/0TIg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\avadi\\.gemini\\antigravity\\scratch\\PLM\\src\\PLM.Infrastructure\\PLM.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Infrastructure\\PLM.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\avadi\\.nuget\\packages\\automapper\\16.1.1\\automapper.16.1.1.nupkg.sha512",
     "C:\\Users\\avadi\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",

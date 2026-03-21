@@ -1,0 +1,66 @@
+@model IEnumerable<PLM.Models.AuditLog>
+
+@{
+    ViewData["Title"] = "System Audit Logs";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">System Audit Trail</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary shadow-sm"><i class="bi-arrow-left me-1"></i> Back to Dashboard</a>
+</div>
+
+<div class="card shadow mb-4 border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 15%">Timestamp</th>
+                        <th style="width: 10%">Action</th>
+                        <th style="width: 15%">Entity</th>
+                        <th style="width: 10%">Record ID</th>
+                        <th style="width: 40%">Changes (JSON)</th>
+                        <th style="width: 10%">User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="small">@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>
+                                @if (log.Action == "Added") { <span class="badge bg-success">Added</span> }
+                                else if (log.Action == "Modified") { <span class="badge bg-warning text-dark">Modified</span> }
+                                else if (log.Action == "Deleted") { <span class="badge bg-danger">Deleted</span> }
+                                else { <span class="badge bg-secondary">@log.Action</span> }
+                            </td>
+                            <td class="fw-bold">@log.EntityName</td>
+                            <td>@log.RecordId</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(log.OldValues))
+                                {
+                                    <div class="small bg-light p-1 mb-1 rounded text-danger text-break" style="max-height: 80px; overflow-y: auto;">
+                                        <strong>Old:</strong> @log.OldValues
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(log.NewValues))
+                                {
+                                    <div class="small bg-light p-1 rounded text-success text-break" style="max-height: 80px; overflow-y: auto;">
+                                        <strong>New:</strong> @log.NewValues
+                                    </div>
+                                }
+                            </td>
+                            <td>@log.UserId</td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No audit logs found. Play around with the system to generate some.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

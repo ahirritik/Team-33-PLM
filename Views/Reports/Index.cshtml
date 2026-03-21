@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Reports Dashboard";
+    var metrics = ViewBag.Metrics as dynamic;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">PLM Reports & Dashboard</h1>
+</div>
+
+<div class="row">
+    <!-- Active Products -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Active Products</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(metrics?.ActiveProducts ?? 0)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi-tags fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active BoMs -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active BoMs</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(metrics?.ActiveBoMs ?? 0)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi-diagram-3 fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending ECOs -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">ECOs Pending Approval</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(metrics?.PendingECOs ?? 0)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi-hourglass fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Draft ECOs -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Draft ECOs</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@(metrics?.DraftECOs ?? 0)</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi-pencil fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">System Audit</h6>
+            </div>
+            <div class="card-body text-center py-5">
+                <i class="bi-journal-check fs-1 text-primary mb-3 d-block"></i>
+                <h5 class="card-title">Audit Logs</h5>
+                <p class="card-text text-muted">View automatically generated system audit logs tracking Insert, Update, and Delete operations via EF Core interception.</p>
+                <a asp-action="AuditLogs" class="btn btn-primary">View System Audit Trail</a>
+            </div>
+        </div>
+    </div>
+</div>

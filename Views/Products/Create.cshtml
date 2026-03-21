@@ -1,0 +1,60 @@
+@model PLM.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4 border-0">
+            <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Create New Product Master</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. iPhone 17" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="SalePrice" class="form-label fw-bold">Sale Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input asp-for="SalePrice" type="number" step="0.01" class="form-control" />
+                            </div>
+                            <span asp-validation-for="SalePrice" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CostPrice" class="form-label fw-bold">Cost Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input asp-for="CostPrice" type="number" step="0.01" class="form-control" />
+                            </div>
+                            <span asp-validation-for="CostPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Attachments" class="form-label fw-bold">Attachments / Link</label>
+                        <input asp-for="Attachments" class="form-control" placeholder="URL to CAD or Spec sheet" />
+                        <span asp-validation-for="Attachments" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary px-4"><i class="bi-check-lg me-1"></i> Create Product</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

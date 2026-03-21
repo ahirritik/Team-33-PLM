@@ -1,0 +1,164 @@
+@model PLM.Models.ECO
+
+@{
+    ViewData["Title"] = "Draft Revision - " + Model.Title;
+}
+
+<div class="card mb-4 border-0 shadow-sm border-bottom border-warning">
+    <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center bg-white">
+        <div class="d-flex align-items-center">
+            <span class="btn btn-outline-warning border-warning px-4 fw-bold text-dark me-3" style="border-radius:0;">Draft Revision</span>
+            <span class="text-secondary fw-bold">@Model.Title</span>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-warning fw-bold px-4">Drafting</button>
+            <button type="button" class="btn btn-light text-secondary disabled fw-bold px-4">Review</button>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body pt-4">
+        <form id="draftForm" asp-action="EditDraft">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ProposedChangesJson" id="ProposedChangesJson" />
+            
+            <div id="dynamicFormContainer">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+
+            <div class="mt-4 border-top pt-3 d-flex justify-content-between">
+                <button type="button" onclick="saveDraft()" class="btn btn-warning shadow-sm px-4 fw-bold">Save Revision</button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to ECO</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const type = @((int)Model.Type);
+    const rawJson = `@Html.Raw((Model.ProposedChangesJson ?? "").Replace("\\", "\\\\").Replace("`", "\\`"))`;
+    let data = {};
+    try { if(rawJson.trim()) data = JSON.parse(rawJson); } catch (e) { console.error("JSON parse failed", e); }
+
+    const container = document.getElementById('dynamicFormContainer');
+
+    function renderProductForm() {
+        container.innerHTML = `
+            <h5 class="mb-4 fw-bold text-secondary">Product Improvements</h5>
+            <div class="row mb-3">
+                <div class="col-md-6 form-group">
+                    <label class="form-label text-muted fw-bold">Product Name</label>
+                    <input type="text" id="prodName" class="form-control" value="${data.Name || ''}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label class="form-label text-muted fw-bold">Sale Price (₹)</label>
+                    <input type="number" step="0.01" id="prodSalePrice" class="form-control" value="${data.SalePrice || 0}" />
+                </div>
+                <div class="col-md-6 form-group">
+                    <label class="form-label text-muted fw-bold">Cost Price (₹)</label>
+                    <input type="number" step="0.01" id="prodCostPrice" class="form-control" value="${data.CostPrice || 0}" />
+                </div>
+            </div>
+        `;
+    }
+
+    function renderBoMForm() {
+        let compsHtml = '';
+        if(data.Components && data.Components.length > 0) {
+            data.Components.forEach((c) => {
+                compsHtml += `
+                <div class="row mb-2 align-items-center comp-row">
+                    <div class="col-md-6"><input type="number" class="form-control comp-id" value="${c.ProductId}" placeholder="Product ID" /></div>
+                    <div class="col-md-4"><input type="number" step="0.01" class="form-control comp-qty" value="${c.Quantity}" placeholder="Qty" /></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.comp-row').remove()"><i class="bi-trash"></i></button></div>
+                </div>`;
+            });
+        }
+        
+        let opsHtml = '';
+        if(data.Operations && data.Operations.length > 0) {
+            data.Operations.forEach((o) => {
+                opsHtml += `
+                <div class="row mb-2 align-items-center op-row">
+                    <div class="col-md-4"><input type="text" class="form-control op-name" value="${o.Name}" placeholder="Operation Name" /></div>
+                    <div class="col-md-3"><input type="number" class="form-control op-time" value="${o.TimeMinutes}" placeholder="Time (m)" /></div>
+                    <div class="col-md-3"><input type="text" class="form-control op-wc" value="${o.WorkCenter}" placeholder="Work Center" /></div>
+                    <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.op-row').remove()"><i class="bi-trash"></i></button></div>
+                </div>`;
+            });
+        }
+
+        container.innerHTML = `
+            <ul class="nav nav-tabs mb-4" role="tablist">
+              <li class="nav-item"><button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#tabComps" type="button">Components</button></li>
+              <li class="nav-item"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#tabOps" type="button">Operations</button></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="tabComps">
+                  <div id="compsContainer">${compsHtml}</div>
+                  <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addCompRow()"><i class="bi-plus"></i> Add Component</button>
+              </div>
+              <div class="tab-pane fade" id="tabOps">
+                  <div id="opsContainer">${opsHtml}</div>
+                  <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addOpRow()"><i class="bi-plus"></i> Add Operation</button>
+              </div>
+            </div>
+        `;
+    }
+    
+    window.addCompRow = function() {
+        document.getElementById('compsContainer').insertAdjacentHTML('beforeend', `
+            <div class="row mb-2 align-items-center comp-row">
+                <div class="col-md-6"><input type="number" class="form-control comp-id" placeholder="Product ID" /></div>
+                <div class="col-md-4"><input type="number" step="0.01" class="form-control comp-qty" placeholder="Qty" /></div>
+                <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.comp-row').remove()"><i class="bi-trash"></i></button></div>
+            </div>
+        `);
+    };
+
+    window.addOpRow = function() {
+        document.getElementById('opsContainer').insertAdjacentHTML('beforeend', `
+            <div class="row mb-2 align-items-center op-row">
+                <div class="col-md-4"><input type="text" class="form-control op-name" placeholder="Operation Name" /></div>
+                <div class="col-md-3"><input type="number" class="form-control op-time" placeholder="Time (m)" /></div>
+                <div class="col-md-3"><input type="text" class="form-control op-wc" placeholder="Work Center" /></div>
+                <div class="col-md-2"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.op-row').remove()"><i class="bi-trash"></i></button></div>
+            </div>
+        `);
+    };
+
+    if (type === 0) renderProductForm();
+    else renderBoMForm();
+
+    window.saveDraft = function() {
+        let result = {};
+        if (type === 0) {
+            result.Name = document.getElementById('prodName').value;
+            result.SalePrice = parseFloat(document.getElementById('prodSalePrice').value) || 0;
+            result.CostPrice = parseFloat(document.getElementById('prodCostPrice').value) || 0;
+        } else {
+            result.Components = [];
+            document.querySelectorAll('.comp-row').forEach(row => {
+                const id = parseInt(row.querySelector('.comp-id').value);
+                const qty = parseFloat(row.querySelector('.comp-qty').value);
+                if(id > 0) result.Components.push({ ProductId: id, Quantity: qty });
+            });
+            result.Operations = [];
+            document.querySelectorAll('.op-row').forEach(row => {
+                const name = row.querySelector('.op-name').value;
+                const time = parseInt(row.querySelector('.op-time').value) || 0;
+                const wc = row.querySelector('.op-wc').value;
+                if(name) result.Operations.push({ Name: name, TimeMinutes: time, WorkCenter: wc });
+            });
+        }
+        document.getElementById('ProposedChangesJson').value = JSON.stringify(result);
+        document.getElementById('draftForm').submit();
+    };
+</script>
+}

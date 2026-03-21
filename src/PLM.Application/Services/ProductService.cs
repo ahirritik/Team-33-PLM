@@ -61,6 +61,7 @@ public class ProductService : IProductService
             VersionNumber = 1,
             CostPrice = dto.CostPrice,
             SalePrice = dto.SalePrice,
+            Attachments = dto.Attachments ?? "",
             IsActive = true,
             ChangeDescription = "Initial version",
             CreatedAt = DateTime.UtcNow,

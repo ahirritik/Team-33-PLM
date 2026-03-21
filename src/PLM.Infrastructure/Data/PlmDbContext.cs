@@ -26,7 +26,7 @@ public class PlmDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Product>(e =>
         {
             e.HasKey(p => p.Id);
-            e.Property(p => p.Name).IsRequired().HasMaxLength(200);
+            e.Property(p => p.Name).IsRequired().HasMaxLength(255);
             e.Property(p => p.Description).HasMaxLength(2000);
             e.Property(p => p.Status).HasConversion<string>().HasMaxLength(20);
             e.HasIndex(p => p.Name);
@@ -42,6 +42,7 @@ public class PlmDbContext : IdentityDbContext<ApplicationUser>
             e.Property(v => v.SalePrice).HasColumnType("decimal(18,2)");
             e.Property(v => v.ChangeDescription).HasMaxLength(500);
             e.Property(v => v.CreatedBy).HasMaxLength(100);
+            e.Property(v => v.Attachments).HasMaxLength(2000);
             e.HasIndex(v => new { v.ProductId, v.VersionNumber }).IsUnique();
             e.HasIndex(v => v.IsActive);
 

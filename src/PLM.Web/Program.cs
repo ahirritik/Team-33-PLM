@@ -9,6 +9,10 @@ using PLM.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cultureInfo = new System.Globalization.CultureInfo("en-IN");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

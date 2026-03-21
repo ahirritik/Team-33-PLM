@@ -12,7 +12,9 @@ public class MappingProfile : Profile
         CreateMap<Product, ProductDto>()
             .ForMember(d => d.VersionCount, opt => opt.MapFrom(s => s.Versions.Count))
             .ForMember(d => d.ActiveVersion, opt => opt.MapFrom(s => s.Versions.FirstOrDefault(v => v.IsActive)));
-        CreateMap<ProductVersion, ProductVersionDto>();
+        CreateMap<ProductVersion, ProductVersionDto>()
+            .ForMember(d => d.Name, opt => opt.MapFrom(s => s.Product.Name))
+            .ForMember(d => d.Description, opt => opt.MapFrom(s => s.Product.Description));
         CreateMap<ProductCreateDto, Product>();
 
         // BoM

@@ -23,18 +23,17 @@
         </AuthorizeView>
     </div>
 
-    <MudDataGrid T="ProductDto" Items="@_products" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
-                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+    <MudDataGrid T="ProductDto" Items="@_products" Filterable="true" SortMode="SortMode.Multiple" 
+                  Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
         <ToolBarContent>
+            <MudText Typo="Typo.h6">Products</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="_searchString" Placeholder="Search products..." Adornment="Adornment.Start" Immediate="true"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" 
-                          OnKeyUp="HandleSearch" />
+                          OnKeyUp="HandleSearch" Clearable="true" />
         </ToolBarContent>
         <Columns>
-            <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" Filterable="true" />
             <PropertyColumn Property="x => x.Name" Title="Product Name" Sortable="true" Filterable="true" />
-            <PropertyColumn Property="x => x.Description" Title="Description" Sortable="false" Filterable="false" />
             <PropertyColumn Property="x => x.CurrentVersionNumber" Title="Version" Sortable="true" />
             <TemplateColumn Title="Status">
                 <CellTemplate>
@@ -48,10 +47,10 @@
                     }
                 </CellTemplate>
             </TemplateColumn>
-            <TemplateColumn Title="Actions">
+            <TemplateColumn Title="Actions" Sortable="false" Filterable="false">
                 <CellTemplate>
-                    <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" 
-                               OnClick="@(() => ViewDetails(context.Item.Id))">View Details</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" 
+                                   OnClick="@(() => ViewDetails(context.Item.Id))" />
                 </CellTemplate>
             </TemplateColumn>
         </Columns>

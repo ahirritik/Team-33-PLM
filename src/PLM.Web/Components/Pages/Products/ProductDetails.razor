@@ -4,6 +4,7 @@
 @using PLM.Application.Interfaces
 @inject IProductService ProductService
 @inject NavigationManager NavManager
+@inject IDialogService DialogService
 @attribute [Authorize]
 
 <PageTitle>Product Details - PLM Engineer</PageTitle>
@@ -140,6 +141,16 @@
                                                 <MudText Typo="Typo.caption">Sale: @version.SalePrice.ToString("C")</MudText>
                                                 <MudText Typo="Typo.caption">By: @version.CreatedBy</MudText>
                                             </div>
+                                            @if (!version.IsActive && _activeVersion != null)
+                                            {
+                                                <div class="d-flex justify-end mt-2">
+                                                    <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary" 
+                                                               StartIcon="@Icons.Material.Filled.Compare"
+                                                               OnClick="@(() => OpenCompareDialog(version))">
+                                                        Compare with Active
+                                                    </MudButton>
+                                                </div>
+                                            }
                                         </MudPaper>
                                     </ItemContent>
                                 </MudTimelineItem>
@@ -190,5 +201,18 @@
         }
         
         _isLoading = false;
+    }
+
+    private async Task OpenCompareDialog(ProductVersionDto selectedVersion)
+    {
+        var parameters = new DialogParameters<ProductVersionCompareDialog>
+        {
+            { x => x.ActiveVersion, _activeVersion },
+            { x => x.SelectedVersion, selectedVersion }
+        };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+        await DialogService.ShowAsync<ProductVersionCompareDialog>("Version Comparison", parameters, options);
     }
 }

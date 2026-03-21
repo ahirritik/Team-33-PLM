@@ -13,6 +13,7 @@ public class ProductVersion
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string CreatedBy { get; set; } = string.Empty;
+    public string Attachments { get; set; } = string.Empty;
 
     // Navigation properties
     public Product Product { get; set; } = null!;

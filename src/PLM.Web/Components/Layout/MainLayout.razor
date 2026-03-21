@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudDialogProvider />
@@ -6,16 +7,19 @@
 <MudPopoverProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Color="Color.Primary" Fixed="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">PLM Engineer</MudText>
-        <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@ToggleDarkMode" />
-    </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Fixed="true">
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent Class="px-4 pb-12">
+    @if (!IsAccountPage)
+    {
+        <MudAppBar Elevation="1" Color="Color.Primary" Fixed="true">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            <MudText Typo="Typo.h5" Class="ml-3">PLM Engineer</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@ToggleDarkMode" />
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Docked" Fixed="true">
+            <NavMenu />
+        </MudDrawer>
+    }
+    <MudMainContent Class="@(IsAccountPage ? "pa-0" : "px-4 pb-12")">
         @Body
     </MudMainContent>
 </MudLayout>
@@ -30,6 +34,8 @@
     bool _drawerOpen = true;
     bool _isDarkMode = false;
     private MudTheme _theme = new();
+
+    private bool IsAccountPage => NavigationManager.Uri.Contains("/Account/Login", StringComparison.OrdinalIgnoreCase);
 
     void DrawerToggle()
     {

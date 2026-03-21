@@ -1,0 +1,84 @@
+@using PLM.Application.DTOs
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Compare" Class="mr-3" />
+            Compare Product Versions
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="6">
+                <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-2 font-weight-bold">Active Version (v@ActiveVersion.VersionNumber)</MudText>
+                <MudPaper Elevation="0" Class="pa-4 rounded border border-solid mud-border-primary">
+                    <ComparisonField Label="Name" Value="@ActiveVersion.Name" />
+                    <ComparisonField Label="Description" Value="@ActiveVersion.Description" />
+                    <ComparisonField Label="Cost Price" Value="@ActiveVersion.CostPrice.ToString("C")" />
+                    <ComparisonField Label="Sale Price" Value="@ActiveVersion.SalePrice.ToString("C")" />
+                    <ComparisonField Label="Attachments" Value="@ActiveVersion.Attachments" />
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6">
+                <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-2 font-weight-bold">Selected Version (v@SelectedVersion.VersionNumber)</MudText>
+                <MudPaper Elevation="0" Class="pa-4 rounded border border-solid @(HasDifferences ? "mud-border-warning" : "mud-border-success")">
+                    <ComparisonField Label="Name" Value="@SelectedVersion.Name" ComparisonValue="@ActiveVersion.Name" />
+                    <ComparisonField Label="Description" Value="@SelectedVersion.Description" ComparisonValue="@ActiveVersion.Description" />
+                    <ComparisonField Label="Cost Price" Value="@SelectedVersion.CostPrice.ToString("C")" ComparisonValue="@ActiveVersion.CostPrice.ToString("C")" />
+                    <ComparisonField Label="Sale Price" Value="@SelectedVersion.SalePrice.ToString("C")" ComparisonValue="@ActiveVersion.SalePrice.ToString("C")" />
+                    <ComparisonField Label="Attachments" Value="@SelectedVersion.Attachments" ComparisonValue="@ActiveVersion.Attachments" />
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Color="Color.Default">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public ProductVersionDto ActiveVersion { get; set; }
+    [Parameter] public ProductVersionDto SelectedVersion { get; set; }
+
+    private bool HasDifferences => 
+        ActiveVersion.Name != SelectedVersion.Name ||
+        ActiveVersion.Description != SelectedVersion.Description ||
+        ActiveVersion.CostPrice != SelectedVersion.CostPrice ||
+        ActiveVersion.SalePrice != SelectedVersion.SalePrice ||
+        ActiveVersion.Attachments != SelectedVersion.Attachments;
+
+    void Cancel() => MudDialog.Cancel();
+}
+
+@* Simple internal component for field comparison *@
+@code {
+    private class ComparisonField : ComponentBase
+    {
+        [Parameter] public string Label { get; set; }
+        [Parameter] public string Value { get; set; }
+        [Parameter] public string ComparisonValue { get; set; }
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            var isDifferent = ComparisonValue != null && Value != ComparisonValue;
+            
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "mb-3");
+            
+            builder.OpenElement(2, "p");
+            builder.AddAttribute(3, "style", "font-weight: 500; font-size: 0.75rem; color: var(--mud-palette-text-secondary); margin-bottom: 2px;");
+            builder.AddContent(4, Label);
+            builder.CloseElement();
+            
+            builder.OpenElement(5, "p");
+            builder.AddAttribute(6, "style", $"margin: 0; font-size: 0.9rem; {(isDifferent ? "color: var(--mud-palette-warning); font-weight: bold; background-color: rgba(255,152,0,0.1); padding: 2px 4px; border-radius: 2px;" : "")}");
+            builder.AddContent(7, string.IsNullOrEmpty(Value) ? "(empty)" : Value);
+            builder.CloseElement();
+            
+            builder.CloseElement();
+        }
+    }
+}

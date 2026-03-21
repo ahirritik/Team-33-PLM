@@ -26,6 +26,9 @@ public class ProductVersionDto
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? Attachments { get; set; }
 }
 
 public class ProductCreateDto
@@ -34,4 +37,5 @@ public class ProductCreateDto
     public string Description { get; set; } = string.Empty;
     public decimal CostPrice { get; set; }
     public decimal SalePrice { get; set; }
+    public string? Attachments { get; set; }
 }

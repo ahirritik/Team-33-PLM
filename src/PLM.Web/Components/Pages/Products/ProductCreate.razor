@@ -30,7 +30,7 @@
                     <MudGrid>
                         <MudItem xs="12">
                             <MudTextField @bind-Value="_model.Name" Label="Product Name" Required="true" 
-                                          Variant="Variant.Outlined" For="@(() => _model.Name)" />
+                                          Variant="Variant.Outlined" For="@(() => _model.Name)" MaxLength="255" />
                         </MudItem>
                         
                         <MudItem xs="12">
@@ -41,15 +41,33 @@
                         <MudItem xs="12" sm="6">
                             <MudNumericField @bind-Value="_model.CostPrice" Label="Cost Price" 
                                              Variant="Variant.Outlined" Adornment="Adornment.Start" 
-                                             AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                                             AdornmentIcon="@Icons.Material.Filled.CurrencyRupee" 
                                              For="@(() => _model.CostPrice)" />
                         </MudItem>
                         
                         <MudItem xs="12" sm="6">
                             <MudNumericField @bind-Value="_model.SalePrice" Label="Sale Price" 
                                              Variant="Variant.Outlined" Adornment="Adornment.Start" 
-                                             AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                                             AdornmentIcon="@Icons.Material.Filled.CurrencyRupee" 
                                              For="@(() => _model.SalePrice)" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <div class="d-flex align-center gap-2">
+                                <MudTextField @bind-Value="_model.Attachments" Label="Attachments" 
+                                              Variant="Variant.Outlined" ReadOnly="true" Placeholder="No file uploaded" />
+                                <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadFiles">
+                                    <ActivatorContent>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                                            Upload
+                                        </MudButton>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudNumericField Value="1" Label="Version" Variant="Variant.Outlined" ReadOnly="true" />
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
@@ -110,6 +128,16 @@
         finally
         {
             _isSubmitting = false;
+        }
+    }
+
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            _model.Attachments = file.Name;
+            Snackbar.Add($"File {file.Name} selected", Severity.Info);
         }
     }
 }

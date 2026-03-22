@@ -1,0 +1,196 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IECOService ECOService
+
+<PageTitle>Dashboard - PLM Engineer</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+            <MudText Typo="Typo.h4" GutterBottom="true" Class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.Dashboard" Size="Size.Large" Class="mr-3" Color="Color.Primary" />
+                System Overview
+            </MudText>
+
+            @if (_dashboard == null)
+            {
+                <div class="d-flex justify-center mt-16">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </div>
+            }
+            else
+            {
+                <MudGrid Class="mt-4">
+                    <!-- Metrics Cards -->
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-primary mud-elevation-4 rounded-lg">
+                            <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" Class="mr-4 text-white" />
+                            <div class="d-flex flex-column text-white">
+                                <MudText Typo="Typo.h6">Total Products</MudText>
+                                <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.TotalProducts</MudText>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-info mud-elevation-4 rounded-lg">
+                            <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Class="mr-4 text-white" />
+                            <div class="d-flex flex-column text-white">
+                                <MudText Typo="Typo.h6">Total BoMs</MudText>
+                                <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.TotalBoMs</MudText>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-warning mud-elevation-4 rounded-lg">
+                            <MudIcon Icon="@Icons.Material.Filled.PendingActions" Size="Size.Large" Class="mr-4 text-white" />
+                            <div class="d-flex flex-column text-white">
+                                <MudText Typo="Typo.h6">Pending ECOs</MudText>
+                                <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.PendingECOs</MudText>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-success mud-elevation-4 rounded-lg">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Class="mr-4 text-white" />
+                            <div class="d-flex flex-column text-white">
+                                <MudText Typo="Typo.h6">Approved ECOs</MudText>
+                                <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.ApprovedECOs</MudText>
+                            </div>
+                        </MudPaper>
+                    </MudItem>
+
+                    <!-- Charts row -->
+                    <MudItem xs="12" md="6">
+                        <MudCard Elevation="3" Class="rounded-lg h-100">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">ECOs by Stage</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @if (_dashboard.PendingECOs > 0 || _dashboard.ApprovedECOs > 0 || _dashboard.RejectedECOs > 0)
+                                {
+                                    <MudList T="string" Dense="true">
+                                        <MudListItem>
+                                            <div class="d-flex justify-space-between w-100">
+                                                <MudText>Pending Approvals</MudText>
+                                                <MudText Color="Color.Warning" Class="font-weight-bold">@_dashboard.PendingECOs</MudText>
+                                            </div>
+                                        </MudListItem>
+                                        <MudDivider />
+                                        <MudListItem>
+                                            <div class="d-flex justify-space-between w-100">
+                                                <MudText>Approved Changes</MudText>
+                                                <MudText Color="Color.Success" Class="font-weight-bold">@_dashboard.ApprovedECOs</MudText>
+                                            </div>
+                                        </MudListItem>
+                                        <MudDivider />
+                                        <MudListItem>
+                                            <div class="d-flex justify-space-between w-100">
+                                                <MudText>Rejected Changes</MudText>
+                                                <MudText Color="Color.Error" Class="font-weight-bold">@_dashboard.RejectedECOs</MudText>
+                                            </div>
+                                        </MudListItem>
+                                    </MudList>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2" Color="Color.Surface" Class="text-center mt-8">No data available.</MudText>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudCard Elevation="3" Class="rounded-lg h-100">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Recent Approvals Needed</MudText>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/eco/approvals">View All</MudButton>
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @if (_dashboard.PendingECOs == 0)
+                                {
+                                    <div class="d-flex flex-column align-center justify-center mt-8 text-muted">
+                                        <MudIcon Icon="@Icons.Material.Filled.TaskAlt" Size="Size.Large" Color="Color.Success" Class="mb-3" />
+                                        <MudText>All caught up! No pending approvals.</MudText>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <MudList T="string" Dense="true">
+                                        @foreach (var eco in _recentPendingECOs)
+                                        {
+                                            <MudListItem Href="@($"/eco/details/{eco.Id}")">
+                                                <div class="d-flex flex-row justify-space-between w-100">
+                                                    <div>
+                                                        <MudText Typo="Typo.subtitle2">@eco.Title</MudText>
+                                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@eco.Type.ToString() - @eco.EffectiveDate.ToString("MMM dd, yyyy")</MudText>
+                                                    </div>
+                                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">Pending</MudChip>
+                                                </div>
+                                            </MudListItem>
+                                            <MudDivider />
+                                        }
+                                    </MudList>
+                                }
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                </MudGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16 d-flex flex-column align-center justify-center">
+            <MudIcon Icon="@Icons.Material.Filled.Engineering" Style="font-size: 100px; color: var(--mud-palette-primary);" />
+            <MudText Typo="Typo.h2" Class="mt-4 font-weight-bold">PLM Engineer</MudText>
+            <MudText Typo="Typo.h5" Class="mt-2 text-muted">Product Lifecycle Management & Change Control</MudText>
+            
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-8 px-10 rounded-pill" Href="/Account/Login">
+                Sign In to Continue
+            </MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private DashboardDto? _dashboard;
+    private double[] _ecoChartData = Array.Empty<double>();
+    private string[] _ecoChartLabels = Array.Empty<string>();
+    private List<ECODto> _recentPendingECOs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _dashboard = await ECOService.GetDashboardAsync();
+            
+            if (_dashboard != null)
+            {
+                _ecoChartLabels = new string[] { "Pending", "Approved", "Rejected" };
+                _ecoChartData = new double[] 
+                { 
+                    _dashboard.PendingECOs, 
+                    _dashboard.ApprovedECOs, 
+                    _dashboard.RejectedECOs 
+                };
+            }
+
+            var allPending = await ECOService.GetPendingApprovalsAsync();
+            _recentPendingECOs = allPending.Take(4).ToList();
+        }
+        catch
+        {
+            // If user is not authenticated or other error, ignore.
+        }
+    }
+}

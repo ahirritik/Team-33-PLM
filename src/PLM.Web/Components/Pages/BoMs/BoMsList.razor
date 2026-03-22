@@ -9,8 +9,11 @@
 <PageTitle>Bills of Material - PLM Engineer</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h4">BoM Repository</MudText>
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">BoM Repository</MudText>
+            <MudText Class="plm-page-subtitle">Centralized Bill of Material records linked to product revisions.</MudText>
+        </div>
         <AuthorizeView Roles="Engineering,Admin">
             <div class="d-flex gap-2">
                 <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/boms/create">
@@ -24,7 +27,7 @@
     </div>
 
     <MudDataGrid T="BoMDto" Items="@_boms" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
-                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+                 Hover="true" Dense="true" Elevation="0" Class="rounded-lg plm-surface">
         <ToolBarContent>
             <MudSpacer />
             <MudTextField @bind-Value="_searchString" Placeholder="Search BoMs..." Adornment="Adornment.Start" Immediate="true"

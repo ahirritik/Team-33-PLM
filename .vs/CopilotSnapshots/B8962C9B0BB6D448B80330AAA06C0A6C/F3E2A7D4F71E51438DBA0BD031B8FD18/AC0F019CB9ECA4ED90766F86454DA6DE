@@ -1,0 +1,209 @@
+﻿@page "/boms/create"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@using System.Security.Claims
+@inject IBoMService BoMService
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+@attribute [Authorize(Roles = "Engineering,Admin")]
+
+<PageTitle>Create BoM - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mb-16">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+    
+    <div class="d-flex align-center mb-6">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/boms"))" Class="mr-2" />
+        <MudText Typo="Typo.h4">Create New Bill of Material</MudText>
+    </div>
+
+    <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+        <FluentValidationValidator />
+        
+        <MudGrid>
+            <!-- Header section -->
+            <MudItem xs="12">
+                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                    <MudText Typo="Typo.h6" Class="mb-4">BoM Header</MudText>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudSelect T="int" @bind-Value="_model.ProductId" Label="Select Product*" Variant="Variant.Outlined" Required="true">
+                                <MudSelectItem Value="0">-- Select Product --</MudSelectItem>
+                                @foreach (var prod in _products)
+                                {
+                                    <MudSelectItem Value="@prod.Id">@prod.Name (@prod.Id)</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="_model.Name" Label="BoM Name*" Required="true" Variant="Variant.Outlined" For="@(() => _model.Name)" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_model.Description" Label="Description" Lines="2" Variant="Variant.Outlined" For="@(() => _model.Description)" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Components Section -->
+            <MudItem xs="12" md="7">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Components</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddComponent">Add</MudButton>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (!_model.Components.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No components added yet.</MudText>
+                        }
+                        else
+                        {
+                            <MudTable Items="@_model.Components" Dense="true" Hover="true" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Part Number</MudTh>
+                                    <MudTh>Name</MudTh>
+                                    <MudTh>Qty</MudTh>
+                                    <MudTh>Cost</MudTh>
+                                    <MudTh></MudTh>
+                                </HeaderContent>
+                                <RowTemplate Context="comp">
+                                    <MudTd><MudTextField @bind-Value="comp.PartNumber" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                    <MudTd><MudTextField @bind-Value="comp.ComponentName" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                    <MudTd><MudNumericField @bind-Value="comp.Quantity" Margin="Margin.Dense" Variant="Variant.Text" Min="1" /></MudTd>
+                                    <MudTd><MudNumericField @bind-Value="comp.UnitCost" Margin="Margin.Dense" Variant="Variant.Text" Min="0" /></MudTd>
+                                    <MudTd>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => RemoveComponent(comp))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Operations Section -->
+            <MudItem xs="12" md="5">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Operations</MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudButton StartIcon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="AddOperation">Add</MudButton>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (!_model.Operations.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-center pa-4">No operations added yet.</MudText>
+                        }
+                        else
+                        {
+                            <MudTable Items="@_model.Operations" Dense="true" Hover="true" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Name</MudTh>
+                                    <MudTh>Center</MudTh>
+                                    <MudTh>Time</MudTh>
+                                    <MudTh></MudTh>
+                                </HeaderContent>
+                                <RowTemplate Context="op">
+                                    <MudTd><MudTextField @bind-Value="op.OperationName" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                    <MudTd><MudTextField @bind-Value="op.WorkCenter" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                    <MudTd><MudNumericField @bind-Value="op.EstimatedTime" Margin="Margin.Dense" Variant="Variant.Text" Min="0" /></MudTd>
+                                    <MudTd>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => RemoveOperation(op))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-end gap-2 mt-4">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="@(() => NavManager.NavigateTo("/boms"))">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(_isSubmitting || _model.ProductId == 0)">
+                    @if (_isSubmitting)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Creating...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Create Bill of Material</MudText>
+                    }
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudContainer>
+
+@code {
+    private BoMCreateDto _model = new();
+    private List<ProductDto> _products = new();
+    private bool _isSubmitting = false;
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs.Add(new BreadcrumbItem("Dashboard", href: "/"));
+        _breadcrumbs.Add(new BreadcrumbItem("Bills of Material", href: "/boms"));
+        _breadcrumbs.Add(new BreadcrumbItem("Create", href: null, disabled: true));
+
+        var result = await ProductService.GetPagedAsync(1, 100);
+        _products = result.Items.ToList();
+    }
+
+    private void AddComponent()
+    {
+        _model.Components.Add(new BoMComponentDto { Quantity = 1, Unit = "pcs" });
+    }
+
+    private void RemoveComponent(BoMComponentDto component)
+    {
+        _model.Components.Remove(component);
+    }
+
+    private void AddOperation()
+    {
+        var seq = _model.Operations.Any() ? _model.Operations.Max(o => o.SequenceOrder) + 10 : 10;
+        _model.Operations.Add(new BoMOperationDto { SequenceOrder = seq });
+    }
+
+    private void RemoveOperation(BoMOperationDto operation)
+    {
+        _model.Operations.Remove(operation);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            _isSubmitting = true;
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "system";
+            var userName = user.Identity?.Name ?? "Administrator";
+
+            var result = await BoMService.CreateAsync(_model, userId, userName);
+            Snackbar.Add("BoM created successfully (Direct Entry)", Severity.Success);
+            NavManager.NavigateTo($"/boms/{result.Id}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error creating BoM: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

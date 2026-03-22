@@ -1,0 +1,95 @@
+﻿@page "/eco/approvals"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@using System.Security.Claims
+@inject IECOService ECOService
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+@attribute [Authorize(Roles = "Approver,Admin")]
+
+<PageTitle>Pending Approvals - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h4">Approvals Dashboard</MudText>
+    </div>
+
+    @if (_isLoading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (!_pendingECOs.Any())
+    {
+        <MudPaper Elevation="0" Class="pa-10 text-center rounded-lg bg-light border-dashed">
+            <MudIcon Icon="@Icons.Material.Filled.AssignmentTurnedIn" Size="Size.Large" Color="Color.Success" Class="mb-4" />
+            <MudText Typo="Typo.h6">You're all caught up!</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">There are no Change Orders waiting for approval right now.</MudText>
+            <MudButton Color="Color.Primary" Variant="Variant.Outlined" Class="mt-4" Href="/eco/list">View All ECOs</MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudGrid>
+            @foreach (var eco in _pendingECOs)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Elevation="3" Class="h-100 d-flex flex-column rounded-lg border-t border-solid border-warning border-4">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                                    ECO-@eco.Id.ToString("D5")
+                                </MudText>
+                                <MudText Typo="Typo.h6" Class="mt-1 line-clamp-2">@eco.Title</MudText>
+                            </CardHeaderContent>
+                            <CardHeaderActions>
+                                <MudChip T="string" Color="@(eco.Type == PLM.Domain.Enums.ECOType.Product ? Color.Info : Color.Secondary)" Size="Size.Small">
+                                    @eco.Type.ToString()
+                                </MudChip>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent Class="flex-grow-1">
+                            <MudText Typo="Typo.body2" Class="mb-4 line-clamp-3">@eco.Description</MudText>
+                            
+                            <MudDivider Class="my-2" />
+                            
+                            <div class="d-flex justify-space-between my-1">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Target</MudText>
+                                <MudText Typo="Typo.caption" Class="font-weight-bold">@eco.ProductName</MudText>
+                            </div>
+                            <div class="d-flex justify-space-between my-1">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Effective Date</MudText>
+                                <MudText Typo="Typo.caption">@eco.EffectiveDate.ToString("MMM dd, yyyy")</MudText>
+                            </div>
+                            <div class="d-flex justify-space-between my-1">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">Submitted By</MudText>
+                                <MudText Typo="Typo.caption">@eco.CreatedBy</MudText>
+                            </div>
+                        </MudCardContent>
+                        <MudCardActions Class="pa-4 pt-0 d-flex justify-end gap-2">
+                            <MudButton Variant="Variant.Text" Color="Color.Default" Href="@($"/eco/details/{eco.Id}")">Review</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/eco/details/{eco.Id}?action=approve")">Take Action</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private List<ECODto> _pendingECOs = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _isLoading = true;
+        _pendingECOs = (await ECOService.GetPendingApprovalsAsync()).ToList();
+        _isLoading = false;
+    }
+}

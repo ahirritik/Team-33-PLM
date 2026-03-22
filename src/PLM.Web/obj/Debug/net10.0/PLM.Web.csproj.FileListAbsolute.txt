@@ -239,16 +239,6 @@ C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Web\bin\Debug\net10.0\Mic
 C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Web\bin\Debug\net10.0\Microsoft.JSInterop.WebAssembly.dll
 C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Web\bin\Debug\net10.0\Blazored.FluentValidation.dll
 C:\Users\avadi\.gemini\antigravity\scratch\PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t26yu0xig7-{0}-shyy2036sb-shyy2036sb.gz
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\EmbeddedAttribute.cs
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\ValidatableTypeAttribute.cs
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.csproj.AssemblyReference.cache
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\rpswa.dswa.cache.json
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.AssemblyInfoInputs.cache
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.AssemblyInfo.cs
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.csproj.CoreCompileInputs.cache
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.sourcelink.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\appsettings.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\BlazorDebugProxy\BrowserDebugHost.dll
@@ -409,6 +399,16 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\PLM.In
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\PLM.Infrastructure.pdb
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\PLM.Application.pdb
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\bin\Debug\net10.0\PLM.Domain.pdb
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\EmbeddedAttribute.cs
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\ValidatableTypeAttribute.cs
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.csproj.AssemblyReference.cache
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.AssemblyInfoInputs.cache
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.AssemblyInfo.cs
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.csproj.CoreCompileInputs.cache
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.sourcelink.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -420,7 +420,6 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\scoped
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\tzxjg6is5z-{0}-o2b68hjqqd-o2b68hjqqd.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\0wz98yz2xy-{0}-8dleymzaev-8dleymzaev.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\o7k4cxtn0u-{0}-0ykner63ol-0ykner63ol.gz
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t26yu0xig7-{0}-shyy2036sb-shyy2036sb.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\8cdk4d3oyj-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\5acox8vu6w-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\pms3nrs9f8-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -468,8 +467,6 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compre
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\83n1jd4ddi-{0}-abdmv1u4y3-abdmv1u4y3.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\jkc8rjrcxh-{0}-mgww215af1-mgww215af1.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\rrwpx8dztc-{0}-dy8h75y8gn-dy8h75y8gn.gz
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t3497o1072-{0}-92v5xxn6xi-92v5xxn6xi.gz
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\bejcxxn3wa-{0}-92v5xxn6xi-92v5xxn6xi.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.development.json
@@ -482,3 +479,6 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.We
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.genruntimeconfig.cache
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\ref\PLM.Web.dll
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t3497o1072-{0}-uqokd4twlv-uqokd4twlv.gz
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\bejcxxn3wa-{0}-uqokd4twlv-uqokd4twlv.gz
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t26yu0xig7-{0}-0ecojmw2mn-0ecojmw2mn.gz

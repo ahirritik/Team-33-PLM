@@ -1,0 +1,94 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <AuthorizeView>
+        <Authorized>
+            @if (!IsAccountPage)
+            {
+                <MudAppBar Elevation="0" Color="Color.Primary" Fixed="true" Class="plm-appbar">
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+                    <MudText Typo="Typo.h5" Class="ml-3">PLM Engineer</MudText>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@ToggleDarkMode" />
+                </MudAppBar>
+                <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Docked" Fixed="true" Width="300px" Class="plm-drawer">
+                    <NavMenu />
+                </MudDrawer>
+            }
+        </Authorized>
+    </AuthorizeView>
+    <MudMainContent Class="@(IsAccountPage ? "pa-0" : "plm-main-content")">
+        <div class="plm-page-shell">
+            @Body
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    bool _drawerOpen = true;
+    bool _isDarkMode = false;
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Primary = "#5b5ce2",
+            Secondary = "#00b8d9",
+            Tertiary = "#7c4dff",
+            Background = "#f4f7ff",
+            Surface = "#ffffff",
+            AppbarBackground = "#4f46e5",
+            AppbarText = "#ffffff",
+            DrawerBackground = "#f8faff",
+            DrawerText = "#111827",
+            DrawerIcon = "#6366f1",
+            DrawerTextDisabled = "#9ca3af",
+            Success = "#16a34a",
+            Warning = "#f59e0b",
+            Error = "#ef4444",
+            Info = "#0284c7"
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#8b8dff",
+            Secondary = "#22d3ee",
+            Background = "#0f1220",
+            Surface = "#161a2b",
+            AppbarBackground = "#1d2140",
+            DrawerBackground = "#13172a"
+        },
+        Typography = new Typography
+        {
+            Default = new DefaultTypography { FontFamily = ["Inter", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"] },
+            H4 = new H4Typography { FontWeight = 700, LineHeight = 1.2 },
+            H5 = new H5Typography { FontWeight = 700 }
+        },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "14px"
+        }
+    };
+
+    private bool IsAccountPage => NavigationManager.Uri.Contains("/Account/Login", StringComparison.OrdinalIgnoreCase);
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+}

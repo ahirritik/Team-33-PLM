@@ -1,0 +1,115 @@
+﻿@page "/eco/list"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IECOService ECOService
+@inject NavigationManager NavManager
+@attribute [Authorize]
+
+<PageTitle>Change Orders - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h4">Engineering Change Orders (ECO)</MudText>
+        <AuthorizeView Roles="Engineering,Admin">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/eco/create?type=Product">
+                New ECO
+            </MudButton>
+        </AuthorizeView>
+    </div>
+
+    <MudDataGrid T="ECODto" Items="@_ecos" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
+                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+        <ToolBarContent>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search ECOs..." Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" 
+                          OnKeyUp="HandleSearch" />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="ECO #" Sortable="true" Filterable="true">
+                <CellTemplate>
+                    ECO-@context.Item.Id.ToString("D5")
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.Title" Title="Title" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.Type" Title="Type" Sortable="true">
+                <CellTemplate>
+                    <MudChip T="string" Color="@(context.Item.Type == PLM.Domain.Enums.ECOType.Product ? Color.Info : Color.Secondary)" Size="Size.Small">
+                        @context.Item.Type.ToString()
+                    </MudChip>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.ProductName" Title="Target" Sortable="true">
+                <CellTemplate>
+                    @if (context.Item.Type == PLM.Domain.Enums.ECOType.Product)
+                    {
+                        <MudLink Href="@($"/products/{context.Item.ProductId}")" Typo="Typo.body2">@context.Item.ProductName</MudLink>
+                    }
+                    else if (context.Item.BoMId.HasValue)
+                    {
+                        <MudLink Href="@($"/boms/{context.Item.BoMId}")" Typo="Typo.body2">BoM for @context.Item.ProductName</MudLink>
+                    }
+                </CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn Title="Stage">
+                <CellTemplate>
+                    @{
+                        var color = context.Item.Stage switch
+                        {
+                            PLM.Domain.Enums.ECOStage.New => Color.Info,
+                            PLM.Domain.Enums.ECOStage.Approval => Color.Warning,
+                            PLM.Domain.Enums.ECOStage.Done => Color.Success,
+                            PLM.Domain.Enums.ECOStage.Rejected => Color.Error,
+                            _ => Color.Default
+                        };
+                    }
+                    <MudChip T="string" Color="@color" Size="Size.Small" Variant="Variant.Outlined">@context.Item.Stage.ToString()</MudChip>
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.CreatedAt" Title="Created" Sortable="true" Format="MMM dd, yyyy" />
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" 
+                               OnClick="@(() => ViewDetails(context.Item.Id))">Open</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ECODto" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<ECODto> _ecos = new();
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var result = await ECOService.GetPagedAsync(1, 100, null, null);
+        _ecos = result.Items
+            .Where(e => string.IsNullOrWhiteSpace(_searchString) || 
+                        e.Title.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                        e.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private async Task HandleSearch(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private void ViewDetails(int id)
+    {
+        NavManager.NavigateTo($"/eco/details/{id}");
+    }
+}

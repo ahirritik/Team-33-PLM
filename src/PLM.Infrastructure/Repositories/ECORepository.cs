@@ -8,26 +8,33 @@ namespace PLM.Infrastructure.Repositories;
 
 public class ECORepository : IECORepository
 {
-    private readonly PlmDbContext _context;
+    private readonly IDbContextFactory<PlmDbContext> _contextFactory;
 
-    public ECORepository(PlmDbContext context) => _context = context;
+    public ECORepository(IDbContextFactory<PlmDbContext> contextFactory) => _contextFactory = contextFactory;
 
     public async Task<ECO?> GetByIdAsync(int id)
-        => await _context.ECOs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.ECOs
             .Include(e => e.Product)
             .Include(e => e.BoM)
             .FirstOrDefaultAsync(e => e.Id == id);
+    }
 
     public async Task<ECO?> GetByIdWithApprovalsAsync(int id)
-        => await _context.ECOs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.ECOs
             .Include(e => e.Product)
             .Include(e => e.BoM)
             .Include(e => e.Approvals.OrderByDescending(a => a.CreatedAt))
             .FirstOrDefaultAsync(e => e.Id == id);
+    }
 
     public async Task<IReadOnlyList<ECO>> GetAllAsync(ECOStage? stage = null)
     {
-        var query = _context.ECOs
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var query = context.ECOs
             .Include(e => e.Product)
             .Include(e => e.BoM)
             .Include(e => e.Approvals)
@@ -42,7 +49,8 @@ public class ECORepository : IECORepository
     public async Task<(IReadOnlyList<ECO> Items, int TotalCount)> GetPagedAsync(
         int page, int pageSize, ECOStage? stage = null, ECOType? type = null)
     {
-        var query = _context.ECOs
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var query = context.ECOs
             .Include(e => e.Product)
             .Include(e => e.BoM)
             .Include(e => e.Approvals)
@@ -64,33 +72,44 @@ public class ECORepository : IECORepository
     }
 
     public async Task<IReadOnlyList<ECO>> GetByProductIdAsync(int productId)
-        => await _context.ECOs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.ECOs
             .Include(e => e.Approvals)
             .Where(e => e.ProductId == productId)
             .OrderByDescending(e => e.CreatedAt)
             .ToListAsync();
+    }
 
     public async Task<IReadOnlyList<ECO>> GetPendingApprovalsAsync()
-        => await _context.ECOs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.ECOs
             .Include(e => e.Product)
             .Include(e => e.BoM)
             .Where(e => e.Stage == ECOStage.Approval)
             .OrderBy(e => e.CreatedAt)
             .ToListAsync();
+    }
 
     public async Task<ECO> AddAsync(ECO eco)
     {
-        _context.ECOs.Add(eco);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.ECOs.Add(eco);
+        await context.SaveChangesAsync();
         return eco;
     }
 
     public async Task UpdateAsync(ECO eco)
     {
-        _context.ECOs.Update(eco);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.ECOs.Update(eco);
+        await context.SaveChangesAsync();
     }
 
     public async Task<int> GetCountByStageAsync(ECOStage stage)
-        => await _context.ECOs.CountAsync(e => e.Stage == stage);
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.ECOs.CountAsync(e => e.Stage == stage);
+    }
 }

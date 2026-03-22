@@ -14,9 +14,14 @@
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4 mb-16">
     <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
     
-    <div class="d-flex align-center mb-6">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/products"))" Class="mr-2" />
-        <MudText Typo="Typo.h4">Create New Product</MudText>
+    <div class="plm-page-header">
+        <div class="d-flex align-start">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/products"))" Class="mr-2 mt-1" />
+            <div>
+                <MudText Typo="Typo.h4" Class="plm-page-title">Create New Product</MudText>
+                <MudText Class="plm-page-subtitle">Enter baseline product metadata and initial pricing targets.</MudText>
+            </div>
+        </div>
     </div>
 
     <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
@@ -24,7 +29,7 @@
         
         <MudGrid>
             <MudItem xs="12">
-                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                <MudPaper Elevation="0" Class="pa-6 rounded-lg plm-surface">
                     <MudText Typo="Typo.h6" Class="mb-4">Product Information</MudText>
                     
                     <MudGrid>
@@ -53,17 +58,7 @@
                         </MudItem>
 
                         <MudItem xs="12" sm="6">
-                            <div class="d-flex align-center gap-2">
-                                <MudTextField @bind-Value="_model.Attachments" Label="Attachments" 
-                                              Variant="Variant.Outlined" ReadOnly="true" Placeholder="No file uploaded" />
-                                <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadFiles">
-                                    <ActivatorContent>
-                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
-                                            Upload
-                                        </MudButton>
-                                    </ActivatorContent>
-                                </MudFileUpload>
-                            </div>
+                            <MudTextField @bind-Value="_model.Attachments" Label="Attachments" Variant="Variant.Outlined" Placeholder="Optional reference" />
                         </MudItem>
 
                         <MudItem xs="12" sm="6">
@@ -131,13 +126,4 @@
         }
     }
 
-    private void UploadFiles(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        if (file != null)
-        {
-            _model.Attachments = file.Name;
-            Snackbar.Add($"File {file.Name} selected", Severity.Info);
-        }
-    }
 }

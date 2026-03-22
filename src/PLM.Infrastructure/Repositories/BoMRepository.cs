@@ -8,35 +8,45 @@ namespace PLM.Infrastructure.Repositories;
 
 public class BoMRepository : IBoMRepository
 {
-    private readonly PlmDbContext _context;
+    private readonly IDbContextFactory<PlmDbContext> _contextFactory;
 
-    public BoMRepository(PlmDbContext context) => _context = context;
+    public BoMRepository(IDbContextFactory<PlmDbContext> contextFactory) => _contextFactory = contextFactory;
 
     public async Task<BoM?> GetByIdAsync(int id)
-        => await _context.BoMs.FindAsync(id);
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMs.FindAsync(id);
+    }
 
     public async Task<BoM?> GetByIdWithVersionsAsync(int id)
-        => await _context.BoMs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMs
             .Include(b => b.Product)
             .Include(b => b.Versions.OrderByDescending(v => v.VersionNumber))
                 .ThenInclude(v => v.Components)
             .Include(b => b.Versions)
                 .ThenInclude(v => v.Operations.OrderBy(o => o.SequenceOrder))
             .FirstOrDefaultAsync(b => b.Id == id);
+    }
 
     public async Task<IReadOnlyList<BoM>> GetByProductIdAsync(int productId)
-        => await _context.BoMs
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMs
             .Include(b => b.Product)
             .Include(b => b.Versions.Where(v => v.IsActive))
                 .ThenInclude(v => v.Components)
             .Where(b => b.ProductId == productId)
             .OrderByDescending(b => b.UpdatedAt)
             .ToListAsync();
+    }
 
     public async Task<(IReadOnlyList<BoM> Items, int TotalCount)> GetPagedAsync(
         int page, int pageSize, string? search = null, Status? status = null)
     {
-        var query = _context.BoMs
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var query = context.BoMs
             .Include(b => b.Product)
             .Include(b => b.Versions.Where(v => v.IsActive))
                 .ThenInclude(v => v.Components)
@@ -60,17 +70,22 @@ public class BoMRepository : IBoMRepository
 
     public async Task<BoM> AddAsync(BoM bom)
     {
-        _context.BoMs.Add(bom);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.BoMs.Add(bom);
+        await context.SaveChangesAsync();
         return bom;
     }
 
     public async Task UpdateAsync(BoM bom)
     {
-        _context.BoMs.Update(bom);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.BoMs.Update(bom);
+        await context.SaveChangesAsync();
     }
 
     public async Task<bool> ExistsAsync(int id)
-        => await _context.BoMs.AnyAsync(b => b.Id == id);
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMs.AnyAsync(b => b.Id == id);
+    }
 }

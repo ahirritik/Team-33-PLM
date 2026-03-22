@@ -11,8 +11,11 @@
 <PageTitle>Pending Approvals - PLM Engineer</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h4">Approvals Dashboard</MudText>
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Approvals Dashboard</MudText>
+            <MudText Class="plm-page-subtitle">Prioritize pending ECO actions and finalize approvals quickly.</MudText>
+        </div>
     </div>
 
     @if (_isLoading)
@@ -21,7 +24,7 @@
     }
     else if (!_pendingECOs.Any())
     {
-        <MudPaper Elevation="0" Class="pa-10 text-center rounded-lg bg-light border-dashed">
+        <MudPaper Elevation="0" Class="pa-10 text-center rounded-lg bg-light border-dashed plm-surface">
             <MudIcon Icon="@Icons.Material.Filled.AssignmentTurnedIn" Size="Size.Large" Color="Color.Success" Class="mb-4" />
             <MudText Typo="Typo.h6">You're all caught up!</MudText>
             <MudText Typo="Typo.body1" Color="Color.Secondary">There are no Change Orders waiting for approval right now.</MudText>
@@ -34,7 +37,7 @@
             @foreach (var eco in _pendingECOs)
             {
                 <MudItem xs="12" sm="6" md="4">
-                    <MudCard Elevation="3" Class="h-100 d-flex flex-column rounded-lg border-t border-solid border-warning border-4">
+                    <MudCard Elevation="0" Class="h-100 d-flex flex-column rounded-lg border-t border-solid border-warning border-4 plm-surface">
                         <MudCardHeader>
                             <CardHeaderContent>
                                 <MudText Typo="Typo.subtitle1" Class="font-weight-bold">

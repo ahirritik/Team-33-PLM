@@ -335,6 +335,7 @@ public class ECOService : IECOService
             VersionNumber = newVersionNumber,
             CostPrice = eco.ProposedCostPrice ?? currentVersion?.CostPrice ?? 0,
             SalePrice = eco.ProposedSalePrice ?? currentVersion?.SalePrice ?? 0,
+            Attachments = currentVersion?.Attachments ?? string.Empty,
             IsActive = true,
             ChangeDescription = $"ECO-{eco.Id}: {eco.Title}",
             CreatedAt = DateTime.UtcNow,

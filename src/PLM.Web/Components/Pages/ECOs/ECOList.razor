@@ -9,8 +9,11 @@
 <PageTitle>Change Orders - PLM Engineer</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <div class="d-flex justify-space-between align-center mb-6">
-        <MudText Typo="Typo.h4">Engineering Change Orders (ECO)</MudText>
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Engineering Change Orders</MudText>
+            <MudText Class="plm-page-subtitle">Track all product and BoM changes with stage-based workflow visibility.</MudText>
+        </div>
         <AuthorizeView Roles="Engineering,Admin">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/eco/create?type=Product">
                 New ECO
@@ -19,7 +22,7 @@
     </div>
 
     <MudDataGrid T="ECODto" Items="@_ecos" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
-                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+                 Hover="true" Dense="true" Elevation="0" Class="rounded-lg plm-surface">
         <ToolBarContent>
             <MudSpacer />
             <MudTextField @bind-Value="_searchString" Placeholder="Search ECOs..." Adornment="Adornment.Start" Immediate="true"

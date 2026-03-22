@@ -1,5 +1,10 @@
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #f4f7ff 0%, #eef2ff 100%);
+}
+
+body {
+    color: #111827;
 }
 
 a, .btn-link {
@@ -17,8 +22,166 @@ a, .btn-link {
 }
 
 .mud-main-content {
-    padding-top: 64px !important;
+    padding-top: 0 !important;
 }
+
+.plm-main-content {
+    padding: 1.25rem 1.5rem 2.5rem !important;
+    min-height: calc(100vh - 72px);
+}
+
+.plm-page-shell {
+    max-width: 1780px;
+    margin: 0 auto;
+}
+
+.plm-appbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(6px);
+}
+
+.plm-drawer {
+    border-right: 1px solid #e5e7eb;
+}
+
+.mud-container.mud-container-maxwidth-extralarge,
+.mud-container.mud-container-maxwidth-large,
+.mud-container.mud-container-maxwidth-medium {
+    max-width: 1680px;
+}
+
+.mud-paper,
+.mud-card,
+.mud-table,
+.mud-data-grid,
+.mud-tabs {
+    border-radius: 14px !important;
+}
+
+.mud-card,
+.mud-paper,
+.mud-table-container,
+.mud-data-grid {
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.08);
+}
+
+.mud-table thead th,
+.mud-data-grid-header th {
+    background: #f8faff;
+    color: #374151;
+    font-weight: 700;
+}
+
+.mud-table-container,
+.mud-data-grid {
+    overflow-x: hidden !important;
+}
+
+.mud-table th,
+.mud-table td,
+.mud-data-grid-cell,
+.mud-data-grid-header-cell {
+    white-space: normal !important;
+    word-break: break-word;
+}
+
+.mud-table-row:hover,
+.mud-data-grid-row:hover {
+    background: #f5f7ff !important;
+}
+
+.mud-button-root {
+    border-radius: 10px !important;
+    font-weight: 600;
+}
+
+.mud-input-control {
+    margin-bottom: 0.35rem;
+}
+
+.mud-chip {
+    font-weight: 600;
+}
+
+.mud-dialog {
+    border-radius: 16px !important;
+}
+
+.plm-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.plm-page-header > * {
+    min-width: 0;
+}
+
+.plm-page-title {
+    margin: 0;
+    font-size: clamp(1.4rem, 1.1rem + 0.8vw, 2rem);
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.plm-page-subtitle {
+    margin: .2rem 0 0 0;
+    color: #64748b;
+    font-size: .95rem;
+}
+
+@media (max-width: 900px) {
+    .plm-main-content {
+        padding: 1.15rem .9rem 1.5rem !important;
+    }
+}
+
+.plm-surface {
+    background: #fff;
+    border: 1px solid rgba(99,102,241,.1);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+}
+
+.plm-metric-card {
+    color: #fff;
+    border-radius: 14px;
+    padding: 1rem;
+    min-height: 132px;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, .22);
+}
+
+.plm-metric-icon {
+    width: 42px;
+    min-width: 42px;
+    display: flex;
+    justify-content: center;
+}
+
+.plm-metric-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+.plm-metric-title {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+}
+
+.plm-card-primary { background: linear-gradient(120deg, #4f46e5, #6366f1); }
+.plm-card-info { background: linear-gradient(120deg, #0ea5e9, #22d3ee); }
+.plm-card-warning { background: linear-gradient(120deg, #f59e0b, #fbbf24); }
+.plm-card-success { background: linear-gradient(120deg, #16a34a, #22c55e); }
 
 h1:focus {
     outline: none;

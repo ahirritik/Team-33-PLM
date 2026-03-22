@@ -9,10 +9,15 @@
 <AuthorizeView>
     <Authorized>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-            <MudText Typo="Typo.h4" GutterBottom="true" Class="d-flex align-center">
-                <MudIcon Icon="@Icons.Material.Filled.Dashboard" Size="Size.Large" Class="mr-3" Color="Color.Primary" />
-                System Overview
-            </MudText>
+            <div class="plm-page-header">
+                <div>
+                    <MudText Typo="Typo.h4" Class="plm-page-title d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Dashboard" Size="Size.Large" Class="mr-3" Color="Color.Primary" />
+                        System Overview
+                    </MudText>
+                    <MudText Class="plm-page-subtitle">Live KPI snapshot for products, BoMs and ECO workflow health.</MudText>
+                </div>
+            </div>
 
             @if (_dashboard == null)
             {
@@ -25,40 +30,48 @@
                 <MudGrid Class="mt-4">
                     <!-- Metrics Cards -->
                     <MudItem xs="12" sm="6" md="3">
-                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-primary mud-elevation-4 rounded-lg">
-                            <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" Class="mr-4 text-white" />
-                            <div class="d-flex flex-column text-white">
-                                <MudText Typo="Typo.h6">Total Products</MudText>
+                        <MudPaper Elevation="0" Class="plm-metric-card plm-card-primary">
+                            <div class="plm-metric-icon">
+                                <MudIcon Icon="@Icons.Material.Filled.Inventory" Size="Size.Large" Class="text-white" />
+                            </div>
+                            <div class="plm-metric-content text-white">
+                                <MudText Typo="Typo.h6" Class="plm-metric-title">Total Products</MudText>
                                 <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.TotalProducts</MudText>
                             </div>
                         </MudPaper>
                     </MudItem>
 
                     <MudItem xs="12" sm="6" md="3">
-                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-info mud-elevation-4 rounded-lg">
-                            <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Class="mr-4 text-white" />
-                            <div class="d-flex flex-column text-white">
-                                <MudText Typo="Typo.h6">Total BoMs</MudText>
+                        <MudPaper Elevation="0" Class="plm-metric-card plm-card-info">
+                            <div class="plm-metric-icon">
+                                <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Class="text-white" />
+                            </div>
+                            <div class="plm-metric-content text-white">
+                                <MudText Typo="Typo.h6" Class="plm-metric-title">Total BoMs</MudText>
                                 <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.TotalBoMs</MudText>
                             </div>
                         </MudPaper>
                     </MudItem>
 
                     <MudItem xs="12" sm="6" md="3">
-                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-warning mud-elevation-4 rounded-lg">
-                            <MudIcon Icon="@Icons.Material.Filled.PendingActions" Size="Size.Large" Class="mr-4 text-white" />
-                            <div class="d-flex flex-column text-white">
-                                <MudText Typo="Typo.h6">Pending ECOs</MudText>
+                        <MudPaper Elevation="0" Class="plm-metric-card plm-card-warning">
+                            <div class="plm-metric-icon">
+                                <MudIcon Icon="@Icons.Material.Filled.PendingActions" Size="Size.Large" Class="text-white" />
+                            </div>
+                            <div class="plm-metric-content text-white">
+                                <MudText Typo="Typo.h6" Class="plm-metric-title">Pending ECOs</MudText>
                                 <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.PendingECOs</MudText>
                             </div>
                         </MudPaper>
                     </MudItem>
 
                     <MudItem xs="12" sm="6" md="3">
-                        <MudPaper Elevation="2" Class="pa-4 d-flex flex-row align-center mud-theme-success mud-elevation-4 rounded-lg">
-                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Class="mr-4 text-white" />
-                            <div class="d-flex flex-column text-white">
-                                <MudText Typo="Typo.h6">Approved ECOs</MudText>
+                        <MudPaper Elevation="0" Class="plm-metric-card plm-card-success">
+                            <div class="plm-metric-icon">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Large" Class="text-white" />
+                            </div>
+                            <div class="plm-metric-content text-white">
+                                <MudText Typo="Typo.h6" Class="plm-metric-title">Approved ECOs</MudText>
                                 <MudText Typo="Typo.h3" Class="font-weight-bold">@_dashboard.ApprovedECOs</MudText>
                             </div>
                         </MudPaper>

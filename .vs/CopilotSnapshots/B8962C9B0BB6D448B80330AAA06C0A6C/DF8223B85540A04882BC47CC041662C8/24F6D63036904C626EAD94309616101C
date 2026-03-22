@@ -1,0 +1,101 @@
+﻿@page "/boms"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IBoMService BoMService
+@inject NavigationManager NavManager
+@attribute [Authorize]
+
+<PageTitle>Bills of Material - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <div class="d-flex justify-space-between align-center mb-6">
+        <MudText Typo="Typo.h4">BoM Repository</MudText>
+        <AuthorizeView Roles="Engineering,Admin">
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/boms/create">
+                    Create Direct
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.History" Href="/eco/create?type=BoM">
+                    New via ECO
+                </MudButton>
+            </div>
+        </AuthorizeView>
+    </div>
+
+    <MudDataGrid T="BoMDto" Items="@_boms" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
+                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+        <ToolBarContent>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search BoMs..." Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" 
+                          OnKeyUp="HandleSearch" />
+        </ToolBarContent>
+        <Columns>
+            <PropertyColumn Property="x => x.Id" Title="ID" Sortable="true" Filterable="true">
+                <CellTemplate>
+                    BOM-@context.Item.Id.ToString("D5")
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.Name" Title="BoM Name" Sortable="true" Filterable="true" />
+            <PropertyColumn Property="x => x.ProductName" Title="Product" Sortable="true" Filterable="true">
+                <CellTemplate>
+                    <MudLink Href="@($"/products/{context.Item.ProductId}")" Typo="Typo.body2">@context.Item.ProductName</MudLink>
+                </CellTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.CurrentVersionNumber" Title="Version" Sortable="true">
+                <CellTemplate>v@context.Item.CurrentVersionNumber</CellTemplate>
+            </PropertyColumn>
+            <TemplateColumn Title="Status">
+                <CellTemplate>
+                    @if (context.Item.Status == PLM.Domain.Enums.Status.Active)
+                    {
+                        <MudChip T="string" Color="Color.Success" Size="Size.Small" Variant="Variant.Outlined">Active</MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Color="Color.Default" Size="Size.Small" Variant="Variant.Outlined">Archived</MudChip>
+                    }
+                </CellTemplate>
+            </TemplateColumn>
+            <TemplateColumn Title="Actions">
+                <CellTemplate>
+                    <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Primary" 
+                               OnClick="@(() => ViewDetails(context.Item.Id))">View Details</MudButton>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="BoMDto" />
+        </PagerContent>
+    </MudDataGrid>
+</MudContainer>
+
+@code {
+    private List<BoMDto> _boms = new();
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var result = await BoMService.GetPagedAsync(1, 100, _searchString);
+        _boms = result.Items.ToList();
+    }
+
+    private async Task HandleSearch(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private void ViewDetails(int id)
+    {
+        NavManager.NavigateTo($"/boms/{id}");
+    }
+}

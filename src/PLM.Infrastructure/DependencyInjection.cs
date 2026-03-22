@@ -21,6 +21,12 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(PlmDbContext).Assembly.FullName)));
 
+        services.AddDbContextFactory<PlmDbContext>(options =>
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly(typeof(PlmDbContext).Assembly.FullName)),
+            ServiceLifetime.Scoped);
+
         // ── Identity ─────────────────────────────────────────────
         // Identity registration moved to Web project Program.cs to access SignInManager
 

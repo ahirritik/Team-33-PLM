@@ -1,0 +1,49 @@
+﻿using Microsoft.EntityFrameworkCore;
+using PLM.Domain.Entities;
+using PLM.Domain.Interfaces;
+using PLM.Infrastructure.Data;
+
+namespace PLM.Infrastructure.Repositories;
+
+public class BoMVersionRepository : IBoMVersionRepository
+{
+    private readonly PlmDbContext _context;
+
+    public BoMVersionRepository(PlmDbContext context) => _context = context;
+
+    public async Task<BoMVersion?> GetByIdAsync(int id)
+        => await _context.BoMVersions.FindAsync(id);
+
+    public async Task<BoMVersion?> GetByIdWithComponentsAsync(int id)
+        => await _context.BoMVersions
+            .Include(v => v.Components)
+            .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
+            .FirstOrDefaultAsync(v => v.Id == id);
+
+    public async Task<IReadOnlyList<BoMVersion>> GetByBoMIdAsync(int bomId)
+        => await _context.BoMVersions
+            .Include(v => v.Components)
+            .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
+            .Where(v => v.BoMId == bomId)
+            .OrderByDescending(v => v.VersionNumber)
+            .ToListAsync();
+
+    public async Task<BoMVersion?> GetActiveVersionAsync(int bomId)
+        => await _context.BoMVersions
+            .Include(v => v.Components)
+            .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
+            .FirstOrDefaultAsync(v => v.BoMId == bomId && v.IsActive);
+
+    public async Task<BoMVersion> AddAsync(BoMVersion version)
+    {
+        _context.BoMVersions.Add(version);
+        await _context.SaveChangesAsync();
+        return version;
+    }
+
+    public async Task UpdateAsync(BoMVersion version)
+    {
+        _context.BoMVersions.Update(version);
+        await _context.SaveChangesAsync();
+    }
+}

@@ -22,7 +22,7 @@
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-2 font-weight-bold">Selected Version (v@SelectedVersion.VersionNumber)</MudText>
-                <MudPaper Elevation="0" Class="pa-4 rounded border border-solid @(HasDifferences ? "mud-border-warning" : "mud-border-success")">
+                <MudPaper Elevation="0" Class="@($"pa-4 rounded border border-solid {(HasDifferences ? "mud-border-warning" : "mud-border-success")}")">
                     <ComparisonField Label="Name" Value="@SelectedVersion.Name" ComparisonValue="@ActiveVersion.Name" />
                     <ComparisonField Label="Description" Value="@SelectedVersion.Description" ComparisonValue="@ActiveVersion.Description" />
                     <ComparisonField Label="Cost Price" Value="@SelectedVersion.CostPrice.ToString("C")" ComparisonValue="@ActiveVersion.CostPrice.ToString("C")" />
@@ -38,7 +38,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter] public ProductVersionDto ActiveVersion { get; set; }
     [Parameter] public ProductVersionDto SelectedVersion { get; set; }

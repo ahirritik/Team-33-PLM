@@ -8,10 +8,15 @@
 <PageTitle>System Audit Logs - PLM Engineer</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <MudText Typo="Typo.h4" GutterBottom="true">System Activity & Audit Logs</MudText>
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">System Activity & Audit Logs</MudText>
+            <MudText Class="plm-page-subtitle">Enterprise-grade traceability of approvals, edits and version events.</MudText>
+        </div>
+    </div>
 
     <MudDataGrid T="AuditLogDto" Items="@_logs" Filterable="true" SortMode="SortMode.Multiple" Groupable="true" 
-                 Hover="true" Dense="true" Elevation="2" Class="rounded-lg">
+                 Hover="true" Dense="true" Elevation="0" Class="rounded-lg plm-surface">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Global Event Stream</MudText>
             <MudSpacer />

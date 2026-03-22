@@ -12,6 +12,13 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4 mb-16">
     <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
 
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Engineering Change Order</MudText>
+            <MudText Class="plm-page-subtitle">Detailed impact review, workflow action and approval timeline.</MudText>
+        </div>
+    </div>
+
     @if (_isLoading)
     {
         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
@@ -25,7 +32,7 @@
         <MudGrid>
             <!-- Header section -->
             <MudItem xs="12">
-                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                <MudPaper Elevation="0" Class="pa-6 rounded-lg plm-surface">
                     <div class="d-flex justify-space-between align-start">
                         <div>
                             <MudText Typo="Typo.h5" Class="font-weight-bold">
@@ -68,12 +75,13 @@
                     
                     <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mb-1">Change Justification</MudText>
                     <MudText Typo="Typo.body1">@_eco.Description</MudText>
+
                 </MudPaper>
             </MudItem>
 
             <!-- Comparison Matrix -->
             <MudItem xs="12" md="8">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Impact Analysis (Diffs)</MudText>
@@ -121,7 +129,7 @@
 
             <!-- Approval Controls & History -->
             <MudItem xs="12" md="4">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Workflow Actions</MudText>

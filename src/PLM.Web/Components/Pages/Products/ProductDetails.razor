@@ -12,6 +12,13 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
 
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Product Details</MudText>
+            <MudText Class="plm-page-subtitle">Version timeline, pricing state and linked BoM relationships.</MudText>
+        </div>
+    </div>
+
     @if (_product == null && _isLoading)
     {
         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
@@ -25,7 +32,7 @@
         <MudGrid>
             <!-- Product Information -->
             <MudItem xs="12" md="4">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">@_product.Name</MudText>
@@ -62,6 +69,7 @@
                                 <MudText Typo="Typo.body2" Color="Color.Secondary">Target Sale Price</MudText>
                                 <MudText Typo="Typo.body2">@_activeVersion.SalePrice.ToString("C")</MudText>
                             </div>
+
                         }
 
                         <MudDivider Class="my-3" />
@@ -82,7 +90,7 @@
 
             <!-- Linked BoMs & History -->
             <MudItem xs="12" md="8">
-                <MudTabs Elevation="3" Rounded="true" ApplyEffectsToContainer="true">
+                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" Class="plm-surface">
                     <MudTabPanel Text="Linked BoMs" Icon="@Icons.Material.Filled.AccountTree">
                         @if (_boms == null || !_boms.Any())
                         {

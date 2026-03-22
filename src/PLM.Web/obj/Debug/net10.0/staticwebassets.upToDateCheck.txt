@@ -95,3 +95,6 @@ wwwroot\lib\bootstrap\dist\js\bootstrap.js
 wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
 wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
 wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+wwwroot\uploads\products\3228b4f5e6ea4a66beee77e24984e8c9.pdf
+wwwroot\uploads\products\4ddf79f45e68480b94d1c6d300127fc4.pdf
+wwwroot\uploads\products\711d86b2d72748ecab493572955c2cbd.pdf

@@ -7,43 +7,57 @@ namespace PLM.Infrastructure.Repositories;
 
 public class BoMVersionRepository : IBoMVersionRepository
 {
-    private readonly PlmDbContext _context;
+    private readonly IDbContextFactory<PlmDbContext> _contextFactory;
 
-    public BoMVersionRepository(PlmDbContext context) => _context = context;
+    public BoMVersionRepository(IDbContextFactory<PlmDbContext> contextFactory) => _contextFactory = contextFactory;
 
     public async Task<BoMVersion?> GetByIdAsync(int id)
-        => await _context.BoMVersions.FindAsync(id);
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMVersions.FindAsync(id);
+    }
 
     public async Task<BoMVersion?> GetByIdWithComponentsAsync(int id)
-        => await _context.BoMVersions
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMVersions
             .Include(v => v.Components)
             .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
             .FirstOrDefaultAsync(v => v.Id == id);
+    }
 
     public async Task<IReadOnlyList<BoMVersion>> GetByBoMIdAsync(int bomId)
-        => await _context.BoMVersions
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMVersions
             .Include(v => v.Components)
             .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
             .Where(v => v.BoMId == bomId)
             .OrderByDescending(v => v.VersionNumber)
             .ToListAsync();
+    }
 
     public async Task<BoMVersion?> GetActiveVersionAsync(int bomId)
-        => await _context.BoMVersions
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.BoMVersions
             .Include(v => v.Components)
             .Include(v => v.Operations.OrderBy(o => o.SequenceOrder))
             .FirstOrDefaultAsync(v => v.BoMId == bomId && v.IsActive);
+    }
 
     public async Task<BoMVersion> AddAsync(BoMVersion version)
     {
-        _context.BoMVersions.Add(version);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.BoMVersions.Add(version);
+        await context.SaveChangesAsync();
         return version;
     }
 
     public async Task UpdateAsync(BoMVersion version)
     {
-        _context.BoMVersions.Update(version);
-        await _context.SaveChangesAsync();
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        context.BoMVersions.Update(version);
+        await context.SaveChangesAsync();
     }
 }

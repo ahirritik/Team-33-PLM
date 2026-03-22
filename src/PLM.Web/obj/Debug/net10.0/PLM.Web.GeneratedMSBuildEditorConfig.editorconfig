@@ -37,6 +37,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/avadi/Documents/GitHub/Team-33-PLM/src/PLM.Web/Components/Layout/AccountLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcQWNjb3VudExheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/avadi/Documents/GitHub/Team-33-PLM/src/PLM.Web/Components/Pages/BoMs/BoMCreate.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCb01zXEJvTUNyZWF0ZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

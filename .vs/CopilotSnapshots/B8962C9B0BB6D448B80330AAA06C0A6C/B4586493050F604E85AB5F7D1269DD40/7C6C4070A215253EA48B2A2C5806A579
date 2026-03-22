@@ -1,0 +1,272 @@
+﻿@page "/eco/details/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IECOService ECOService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<PageTitle>ECO Details - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4 mb-16">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+
+    @if (_isLoading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+    }
+    else if (_eco == null)
+    {
+        <MudAlert Severity="Severity.Error">Engineering Change Order not found.</MudAlert>
+    }
+    else
+    {
+        <MudGrid>
+            <!-- Header section -->
+            <MudItem xs="12">
+                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                    <div class="d-flex justify-space-between align-start">
+                        <div>
+                            <MudText Typo="Typo.h5" Class="font-weight-bold">
+                                ECO-@_eco.Id.ToString("D5"): @_eco.Title
+                            </MudText>
+                            <div class="d-flex gap-2 mt-2 align-center">
+                                <MudChip T="string" Color="@(_eco.Type == PLM.Domain.Enums.ECOType.Product ? Color.Info : Color.Secondary)" Size="Size.Small">
+                                    @_eco.Type.ToString()
+                                </MudChip>
+                                
+                                @{
+                                    var stageColor = _eco.Stage switch
+                                    {
+                                        PLM.Domain.Enums.ECOStage.New => Color.Info,
+                                        PLM.Domain.Enums.ECOStage.Approval => Color.Warning,
+                                        PLM.Domain.Enums.ECOStage.Done => Color.Success,
+                                        PLM.Domain.Enums.ECOStage.Rejected => Color.Error,
+                                        _ => Color.Default
+                                    };
+                                }
+                                <MudChip T="string" Color="@stageColor" Size="Size.Small" Variant="Variant.Outlined">
+                                    Stage: @_eco.Stage.ToString()
+                                </MudChip>
+                                
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-2">
+                                    Target: <a href="/products/@_eco.ProductId" class="text-primary font-weight-bold text-decoration-none">@_eco.ProductName</a>
+                                </MudText>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block">Submitted By</MudText>
+                            <MudText Typo="Typo.body2" Class="font-weight-bold d-block">@_eco.CreatedBy</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="d-block mt-1">Effective Date</MudText>
+                            <MudText Typo="Typo.body2" Class="font-weight-bold d-block">@_eco.EffectiveDate.ToString("MMM dd, yyyy")</MudText>
+                        </div>
+                    </div>
+                    
+                    <MudDivider Class="my-4" />
+                    
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mb-1">Change Justification</MudText>
+                    <MudText Typo="Typo.body1">@_eco.Description</MudText>
+
+                </MudPaper>
+            </MudItem>
+
+            <!-- Comparison Matrix -->
+            <MudItem xs="12" md="8">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Impact Analysis (Diffs)</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (_comparison == null)
+                        {
+                            <MudProgressCircular Indeterminate="true" />
+                        }
+                        else if (!_comparison.Any())
+                        {
+                            <MudAlert Severity="Severity.Info">No differences detected between Current Active state and Proposed state.</MudAlert>
+                        }
+                        else
+                        {
+                            <MudTable Items="@_comparison" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                <HeaderContent>
+                                    <MudTh>Property</MudTh>
+                                    <MudTh>Current Value</MudTh>
+                                    <MudTh>Proposed Value</MudTh>
+                                    <MudTh>Status</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Property"><b>@context.FieldName</b></MudTd>
+                                    <MudTd DataLabel="Current Value">
+                                        <MudText Color="Color.Error" Typo="Typo.body2" Style="text-decoration: line-through;">
+                                            @context.OldValue
+                                        </MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Proposed Value">
+                                        <MudText Color="Color.Success" Typo="Typo.body2" Class="font-weight-bold">
+                                            @context.NewValue
+                                        </MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Status">
+                                        <MudChip T="string" Color="@(context.ChangeType == "Modified" ? Color.Warning : context.ChangeType == "Added" ? Color.Success : Color.Error)" Size="Size.Small">@context.ChangeType</MudChip>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Approval Controls & History -->
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Workflow Actions</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (_eco.Stage == PLM.Domain.Enums.ECOStage.Approval)
+                        {
+                            <AuthorizeView Roles="Approver,Admin">
+                                <Authorized>
+                                    <div class="pa-4 bg-light rounded border-dashed border-warning mb-6">
+                                        <MudText Typo="Typo.subtitle2" Class="mb-3 font-weight-bold">Required Action</MudText>
+                                        <MudTextField @bind-Value="_approvalComments" Label="Review Comments (Required for Rejection)" Variant="Variant.Outlined" Lines="3" Class="mb-3" />
+                                        
+                                        <div class="d-flex gap-2">
+                                            <MudButton Variant="Variant.Filled" Color="Color.Success" FullWidth="true"
+                                                       StartIcon="@Icons.Material.Filled.Check" OnClick="@(() => SubmitApproval(true))" Disabled="@_isSubmitting">
+                                                Approve
+                                            </MudButton>
+                                            <MudButton Variant="Variant.Filled" Color="Color.Error" FullWidth="true"
+                                                       StartIcon="@Icons.Material.Filled.Close" OnClick="@(() => SubmitApproval(false))" Disabled="@(_isSubmitting || string.IsNullOrWhiteSpace(_approvalComments))">
+                                                Reject
+                                            </MudButton>
+                                        </div>
+                                    </div>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <MudAlert Severity="Severity.Warning" Class="mb-4">Waiting on Approver sign-off.</MudAlert>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                        }
+
+                        <MudText Typo="Typo.subtitle2" Class="font-weight-bold mb-3">Approval History</MudText>
+                        
+                        @if (!_eco.Approvals.Any())
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">No workflow events recorded yet.</MudText>
+                        }
+                        else
+                        {
+                            <MudTimeline TimelinePosition="TimelinePosition.Left" Class="ml-n3">
+                                @foreach (var appr in _eco.Approvals.OrderByDescending(a => a.CreatedAt))
+                                {
+                                    var icon = appr.Decision == PLM.Domain.Enums.ApprovalDecision.Approved ? Icons.Material.Filled.CheckCircle : 
+                                               appr.Decision == PLM.Domain.Enums.ApprovalDecision.Rejected ? Icons.Material.Filled.Cancel : 
+                                               Icons.Material.Filled.PendingActions;
+                                               
+                                    var iconColor = appr.Decision == PLM.Domain.Enums.ApprovalDecision.Approved ? Color.Success : 
+                                                    appr.Decision == PLM.Domain.Enums.ApprovalDecision.Rejected ? Color.Error : 
+                                                    Color.Warning;
+
+                                    <MudTimelineItem Color="@iconColor" Icon="@icon" Size="Size.Small">
+                                        <ItemContent>
+                                            <MudText Typo="Typo.subtitle2" Class="font-weight-bold">@appr.Decision.ToString()</MudText>
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">By @appr.ApproverName on @(appr.ApprovedAt?.ToString("MMM dd, HH:mm") ?? "Pending")</MudText>
+                                            @if (!string.IsNullOrWhiteSpace(appr.Comments))
+                                            {
+                                                <MudText Typo="Typo.body2" Class="mt-1 font-italic bg-light pa-2 rounded">"@appr.Comments"</MudText>
+                                            }
+                                        </ItemContent>
+                                    </MudTimelineItem>
+                                }
+                            </MudTimeline>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "action")]
+    public string? QueryAction { get; set; }
+
+    private ECODto? _eco;
+    private List<ComparisonDto>? _comparison;
+    private bool _isLoading = true;
+    private bool _isSubmitting = false;
+    private string _approvalComments = "";
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs.Add(new BreadcrumbItem("Dashboard", href: "/"));
+        _breadcrumbs.Add(new BreadcrumbItem("Change Orders", href: "/eco/list"));
+        
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _isLoading = true;
+        _eco = await ECOService.GetByIdAsync(Id);
+        
+        if (_eco != null)
+        {
+            _breadcrumbs.Add(new BreadcrumbItem($"ECO-{_eco.Id.ToString("D5")}", href: null, disabled: true));
+            _comparison = await ECOService.GetComparisonAsync(Id);
+        }
+        
+        _isLoading = false;
+    }
+
+    private async Task SubmitApproval(bool isApproved)
+    {
+        try
+        {
+            _isSubmitting = true;
+            
+            var dto = new ECOApprovalCreateDto
+            {
+                ECOId = _eco!.Id,
+                Decision = isApproved ? PLM.Domain.Enums.ApprovalDecision.Approved : PLM.Domain.Enums.ApprovalDecision.Rejected,
+                Comments = _approvalComments
+            };
+
+            var userId = "approver1"; // In real app: extract from Auth State
+            var userName = "Approver User";
+
+            if (isApproved)
+            {
+                await ECOService.ApproveAsync(dto, userId, userName);
+                Snackbar.Add("ECO successfully approved and changes applied.", Severity.Success);
+            }
+            else
+            {
+                await ECOService.RejectAsync(dto, userId, userName);
+                Snackbar.Add("ECO has been rejected.", Severity.Warning);
+            }
+            
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

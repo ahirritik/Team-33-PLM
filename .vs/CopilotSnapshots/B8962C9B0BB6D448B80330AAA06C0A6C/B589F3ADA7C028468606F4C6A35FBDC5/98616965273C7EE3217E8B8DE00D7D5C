@@ -1,0 +1,437 @@
+﻿@page "/eco/create"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@inject IECOService ECOService
+@inject IProductService ProductService
+@inject IBoMService BoMService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Engineering,Admin")]
+
+<PageTitle>Create Change Order - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4 mb-16">
+    <MudText Typo="Typo.h4" GutterBottom="true">Create Engineering Change Order</MudText>
+
+    <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+        <FluentValidationValidator />
+        
+        <MudGrid>
+            <!-- Core Details -->
+            <MudItem xs="12" md="8">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Change Order Details</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudTextField @bind-Value="_model.Title" For="@(() => _model.Title)" Label="ECO Title" Variant="Variant.Outlined" Class="mb-4" Required="true" />
+                        <MudTextField @bind-Value="_model.Description" For="@(() => _model.Description)" Label="Change Description (Why are we making this change?)" Lines="4" Variant="Variant.Outlined" Class="mb-4" Required="true" />
+                        
+                        <div class="d-flex gap-4 mb-4">
+                            <MudSelect T="PLM.Domain.Enums.ECOType" @bind-Value="_model.Type" Label="Change Type" Variant="Variant.Outlined" Required="true" SelectedValuesChanged="OnTypeChanged">
+                                <MudSelectItem Value="PLM.Domain.Enums.ECOType.Product">Product Adjustment</MudSelectItem>
+                                <MudSelectItem Value="PLM.Domain.Enums.ECOType.BoM">Bill of Material Change</MudSelectItem>
+                            </MudSelect>
+                            
+                            <MudDatePicker @bind-Date="_model.EffectiveDate" Label="Effective Date" Variant="Variant.Outlined" Required="true" />
+                        </div>
+
+                        <MudCheckBox @bind-Value="_model.CreateNewVersion" Label="Create new version upon approval (Archiving current active version)" Color="Color.Primary" Class="mt-2" />
+
+                        <MudPaper Elevation="0" Class="pa-3 rounded border border-dashed mt-4">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">ECO Attachment (required)</MudText>
+                            <div class="d-flex align-center gap-2 mt-2">
+                                <InputFile id="ecoAttachmentInput" OnChange="UploadEcoAttachment" class="d-none" />
+                                <MudButton HtmlTag="label" for="ecoAttachmentInput" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.UploadFile" Disabled="@_isUploadingAttachment">
+                                    Select File
+                                </MudButton>
+
+                                @if (_isUploadingAttachment)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Color="Color.Info" />
+                                    <MudText Typo="Typo.caption">Uploading...</MudText>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(_model.ProposedAttachments))
+                                {
+                                    <MudChip T="string" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small">@_uploadedFileName</MudChip>
+                                    <MudLink Href="@_model.ProposedAttachments" Target="_blank" Underline="Underline.Hover">View</MudLink>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Default" Size="Size.Small" OnClick="ClearAttachment" />
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">No file selected</MudText>
+                                }
+                            </div>
+                        </MudPaper>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Target Selection -->
+            <MudItem xs="12" md="4">
+                <MudCard Elevation="3" Class="rounded-lg h-100">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Target Entity</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (_model.Type == PLM.Domain.Enums.ECOType.Product)
+                        {
+                            <MudSelect T="int" @bind-Value="_model.ProductId" Label="Select Product" Variant="Variant.Outlined" Required="true" SelectedValuesChanged="LoadProductDetails">
+                                @if (_products.Any())
+                                {
+                                    @foreach (var p in _products)
+                                    {
+                                        <MudSelectItem Value="@p.Id">@p.Name (v@p.CurrentVersionNumber)</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        }
+                        else
+                        {
+                            <MudSelect T="int" @bind-Value="_model.ProductId" Label="Select Product" Variant="Variant.Outlined" Class="mb-4" Required="true" SelectedValuesChanged="LoadBoMsForProduct">
+                                @if (_products.Any())
+                                {
+                                    @foreach (var p in _products)
+                                    {
+                                        <MudSelectItem Value="@p.Id">@p.Name</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+
+                            @if (_model.ProductId > 0)
+                            {
+                                <MudSelect T="int?" @bind-Value="_model.BoMId" Label="Select Bill of Material" Variant="Variant.Outlined" Required="true" SelectedValuesChanged="LoadBoMDetails">
+                                    <MudSelectItem T="int?" Value="null">-- Create New BoM --</MudSelectItem>
+                                    @foreach (var b in _availableBoMs)
+                                    {
+                                        <MudSelectItem T="int?" Value="@(b.Id)">@b.Name (v@b.CurrentVersionNumber)</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                        }
+                        
+                        @if (_isLoadingContext)
+                        {
+                            <MudProgressLinear Color="Color.Info" Indeterminate="true" Class="mt-4" />
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <!-- Proposed Changes -->
+            <MudItem xs="12">
+                <MudCard Elevation="3" Class="rounded-lg mt-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">Proposed Changes</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">Specify the exact values you want the target to have upon approval.</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        @if (_model.Type == PLM.Domain.Enums.ECOType.Product && _model.ProductId > 0)
+                        {
+                            <MudGrid>
+                                <MudItem xs="12" sm="6">
+                                    <MudNumericField @bind-Value="_model.ProposedCostPrice" Label="Target Cost Price" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="₹" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6">
+                                    <MudNumericField @bind-Value="_model.ProposedSalePrice" Label="Target Sale Price" Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentText="₹" />
+                                </MudItem>
+                            </MudGrid>
+                        }
+                        else if (_model.Type == PLM.Domain.Enums.ECOType.BoM && _model.ProductId > 0)
+                        {
+                            <MudText Typo="Typo.subtitle1" Class="mt-2 mb-4 font-weight-bold">Warning: BoM modifications through UI are limited in this preview.</MudText>
+                            <MudAlert Severity="Severity.Info" Class="mb-4">
+                                In a full production scenario, this section would render an interactive grid to add/remove Components and Operations. 
+                                For this prototype, if you are modifying an existing BoM, the existing components/operations are carried over intact. 
+                                New logic would need to be added to support granular line-item editing.
+                            </MudAlert>
+                            
+                            <MudTextField @bind-Value="_newBoMName" Label="BoM Name (If creating new)" Variant="Variant.Outlined" Disabled="@(_model.BoMId.HasValue)" />
+                            
+                            @if (_model.ProposedComponents.Any())
+                            {
+                                <MudText Typo="Typo.body2" Class="mt-4">Carrying over <b>@_model.ProposedComponents.Count</b> components.</MudText>
+                                <MudTable Items="@_model.ProposedComponents" Dense="true" Hover="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Part Number</MudTh>
+                                        <MudTh>Name</MudTh>
+                                        <MudTh>Qty</MudTh>
+                                        <MudTh>Cost</MudTh>
+                                        <MudTh></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="comp">
+                                        <MudTd><MudTextField @bind-Value="comp.PartNumber" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                        <MudTd><MudTextField @bind-Value="comp.ComponentName" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                        <MudTd><MudNumericField @bind-Value="comp.Quantity" Margin="Margin.Dense" Variant="Variant.Text" Min="1" /></MudTd>
+                                        <MudTd><MudNumericField @bind-Value="comp.UnitCost" Margin="Margin.Dense" Variant="Variant.Text" Min="0" /></MudTd>
+                                        <MudTd>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => RemoveComponent(comp))" />
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            }
+
+                            @if (_model.ProposedOperations.Any())
+                            {
+                                <MudText Typo="Typo.body2" Class="mt-4">Carrying over <b>@_model.ProposedOperations.Count</b> operations.</MudText>
+                                <MudTable Items="@_model.ProposedOperations" Dense="true" Hover="true" Elevation="0">
+                                    <HeaderContent>
+                                        <MudTh>Name</MudTh>
+                                        <MudTh>Center</MudTh>
+                                        <MudTh>Time</MudTh>
+                                        <MudTh></MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="op">
+                                        <MudTd><MudTextField @bind-Value="op.OperationName" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                        <MudTd><MudTextField @bind-Value="op.WorkCenter" Margin="Margin.Dense" Variant="Variant.Text" /></MudTd>
+                                        <MudTd><MudNumericField @bind-Value="op.EstimatedTime" Margin="Margin.Dense" Variant="Variant.Text" Min="0" /></MudTd>
+                                        <MudTd>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@(() => RemoveOperation(op))" />
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            }
+                        }
+                        else
+                        {
+                            <div class="pa-8 text-center bg-light rounded border-dashed">
+                                <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Large" Color="Color.Secondary" Class="mb-2" />
+                                <MudText Color="Color.Secondary">Please select a Target Entity first.</MudText>
+                            </div>
+                        }
+                    </MudCardContent>
+                    <MudCardActions Class="pa-4 d-flex justify-end gap-2 bg-light">
+                        <MudButton Variant="Variant.Text" Color="Color.Default" Href="/eco/list">Cancel</MudButton>
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Disabled="@_isSubmitting">
+                            @if (_isSubmitting)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Submitting...</MudText>
+                            }
+                            else
+                            {
+                                <span>Submit ECO</span>
+                            }
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudContainer>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "type")]
+    public string? TypeName { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? ProductId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? BoMId { get; set; }
+
+    private ECOCreateDto _model = new()
+    {
+        EffectiveDate = DateTime.Today.AddDays(7),
+        CreateNewVersion = true,
+        ProposedComponents = new List<BoMComponentDto>(),
+        ProposedOperations = new List<BoMOperationDto>()
+    };
+
+    private List<ProductDto> _products = new();
+    private List<BoMDto> _availableBoMs = new();
+    private string _newBoMName = "";
+    
+    private bool _isLoadingContext = false;
+    private bool _isSubmitting = false;
+    private bool _isUploadingAttachment = false;
+    private string? _uploadedFileName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(TypeName) && Enum.TryParse<PLM.Domain.Enums.ECOType>(TypeName, true, out var type))
+        {
+            _model.Type = type;
+        }
+        
+        var productResult = await ProductService.GetPagedAsync(1, 100);
+        _products = productResult.Items.ToList();
+        
+        if (ProductId.HasValue)
+        {
+            _model.ProductId = ProductId.Value;
+            
+            if (_model.Type == PLM.Domain.Enums.ECOType.Product)
+            {
+                await LoadProductDetails(new[] { ProductId.Value });
+            }
+            else
+            {
+                await LoadBoMsForProduct(new[] { ProductId.Value }).ContinueWith(async t => {
+                    if (BoMId.HasValue)
+                    {
+                        _model.BoMId = BoMId.Value;
+                        await LoadBoMDetails(new int?[] { BoMId.Value });
+                    }
+                });
+            }
+        }
+    }
+
+    private void OnTypeChanged(IEnumerable<PLM.Domain.Enums.ECOType> values)
+    {
+        var value = values.FirstOrDefault();
+        _model.Type = value;
+        _model.ProductId = 0;
+        _model.BoMId = null;
+        _model.ProposedCostPrice = null;
+        _model.ProposedSalePrice = null;
+        _model.ProposedAttachments = null;
+        _uploadedFileName = null;
+        _model.ProposedComponents?.Clear();
+        _model.ProposedOperations?.Clear();
+    }
+
+    private async Task LoadProductDetails(IEnumerable<int> values)
+    {
+        var id = values.FirstOrDefault();
+        _model.ProductId = id;
+        if (id <= 0) return;
+
+        _isLoadingContext = true;
+        var p = await ProductService.GetByIdAsync(id);
+        if (p != null)
+        {
+            var activeVer = p.ActiveVersion;
+            if (activeVer != null)
+            {
+                _model.ProposedCostPrice = activeVer.CostPrice;
+                _model.ProposedSalePrice = activeVer.SalePrice;
+            }
+        }
+        _isLoadingContext = false;
+    }
+
+    private async Task UploadEcoAttachment(InputFileChangeEventArgs _)
+    {
+        try
+        {
+            _isUploadingAttachment = true;
+            var response = await JS.InvokeAsync<UploadResponse>("plmUpload.uploadFromInput", "ecoAttachmentInput", "ecos");
+            _model.ProposedAttachments = response.Url;
+            _uploadedFileName = response.OriginalFileName;
+            Snackbar.Add($"Attachment '{response.OriginalFileName}' uploaded.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Attachment upload failed: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isUploadingAttachment = false;
+        }
+    }
+
+    private void ClearAttachment()
+    {
+        _model.ProposedAttachments = null;
+        _uploadedFileName = null;
+    }
+
+    private sealed class UploadResponse
+    {
+        public string Url { get; set; } = string.Empty;
+        public string OriginalFileName { get; set; } = string.Empty;
+    }
+
+    private async Task LoadBoMsForProduct(IEnumerable<int> values)
+    {
+        var id = values.FirstOrDefault();
+        _model.ProductId = id;
+        _model.BoMId = null;
+        _newBoMName = "";
+        _model.ProposedComponents?.Clear();
+        _model.ProposedOperations?.Clear();
+        
+        if (id <= 0) 
+        {
+            _availableBoMs.Clear();
+            return;
+        }
+
+        _isLoadingContext = true;
+        
+        // IBoMService returns products boms
+        _availableBoMs = await BoMService.GetByProductIdAsync(id);
+        
+        _isLoadingContext = false;
+    }
+
+    private async Task LoadBoMDetails(IEnumerable<int?> values)
+    {
+        var id = values.FirstOrDefault();
+        _model.BoMId = id;
+        
+        if (!id.HasValue || id <= 0) 
+        {
+            _model.ProposedComponents?.Clear();
+            _model.ProposedOperations?.Clear();
+            return;
+        }
+
+        _isLoadingContext = true;
+        var bom = await BoMService.GetByIdAsync(id.Value);
+        if (bom != null && bom.ActiveVersion != null)
+        {
+            _model.ProposedComponents = bom.ActiveVersion.Components.ToList();
+            _model.ProposedOperations = bom.ActiveVersion.Operations.ToList();
+        }
+        _isLoadingContext = false;
+    }
+
+    private void RemoveComponent(BoMComponentDto component)
+    {
+        _model.ProposedComponents.Remove(component);
+    }
+
+    private void RemoveOperation(BoMOperationDto operation)
+    {
+        _model.ProposedOperations.Remove(operation);
+    }
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            _isSubmitting = true;
+            
+            // Set User Id/Name from authentication state in a real app.
+            // For now, hardcoding based on role or just default.
+            
+            var ecoResult = await ECOService.CreateAsync(_model, "system", "System User");
+            await ECOService.SubmitAsync(ecoResult.Id, "system", "System User");
+            
+            Snackbar.Add("Change Order created and submitted successfully!", Severity.Success);
+            NavManager.NavigateTo("/eco/list");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

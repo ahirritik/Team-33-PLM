@@ -11,6 +11,13 @@
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
 
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Bill of Material Details</MudText>
+            <MudText Class="plm-page-subtitle">Component structure and routing operations for the active revision.</MudText>
+        </div>
+    </div>
+
     @if (_bom == null && _isLoading)
     {
         <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
@@ -24,7 +31,7 @@
         <MudGrid>
             <!-- BoM Information Header -->
             <MudItem xs="12">
-                <MudPaper Elevation="3" Class="pa-6 rounded-lg d-flex justify-space-between align-center mud-theme-primary">
+                <MudPaper Elevation="0" Class="pa-6 rounded-lg d-flex justify-space-between align-center mud-theme-primary plm-surface">
                     <div>
                         <MudText Typo="Typo.h5" Class="text-white">@_bom.Name</MudText>
                         <MudText Typo="Typo.body2" Class="text-white py-1">ID: BOM-@_bom.Id.ToString("D5") | Product: <a href="/products/@_bom.ProductId" class="text-white text-decoration-underline">@_bom.ProductName</a></MudText>
@@ -55,7 +62,7 @@
             @if (_bom.ActiveVersion != null)
             {
                 <MudItem xs="12" md="12">
-                    <MudPaper Elevation="2" Class="pa-4 rounded-lg">
+                    <MudPaper Elevation="0" Class="pa-4 rounded-lg plm-surface">
                         <MudText Typo="Typo.h6" Class="mb-4">Active Version (v@_bom.ActiveVersion.VersionNumber) Details</MudText>
                         
                         <MudTabs Elevation="0" Rounded="false" ApplyEffectsToContainer="false">

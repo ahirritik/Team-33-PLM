@@ -15,9 +15,14 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4 mb-16">
     <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
     
-    <div class="d-flex align-center mb-6">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/boms"))" Class="mr-2" />
-        <MudText Typo="Typo.h4">Create New Bill of Material</MudText>
+    <div class="plm-page-header">
+        <div class="d-flex align-start">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/boms"))" Class="mr-2 mt-1" />
+            <div>
+                <MudText Typo="Typo.h4" Class="plm-page-title">Create New Bill of Material</MudText>
+                <MudText Class="plm-page-subtitle">Define components and routing steps for the initial BoM revision.</MudText>
+            </div>
+        </div>
     </div>
 
     <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
@@ -26,7 +31,7 @@
         <MudGrid>
             <!-- Header section -->
             <MudItem xs="12">
-                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                <MudPaper Elevation="0" Class="pa-6 rounded-lg plm-surface">
                     <MudText Typo="Typo.h6" Class="mb-4">BoM Header</MudText>
                     <MudGrid>
                         <MudItem xs="12" md="6">
@@ -50,7 +55,7 @@
 
             <!-- Components Section -->
             <MudItem xs="12" md="7">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Components</MudText>
@@ -91,7 +96,7 @@
 
             <!-- Operations Section -->
             <MudItem xs="12" md="5">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Operations</MudText>

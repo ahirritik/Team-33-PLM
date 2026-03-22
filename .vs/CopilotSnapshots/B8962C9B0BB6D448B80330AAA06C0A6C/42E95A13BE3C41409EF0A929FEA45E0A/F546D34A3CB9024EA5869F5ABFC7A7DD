@@ -1,0 +1,182 @@
+﻿@page "/products/create"
+@using Microsoft.AspNetCore.Authorization
+@using PLM.Application.DTOs
+@using PLM.Application.Interfaces
+@using System.Security.Claims
+@using System.IO
+@inject IProductService ProductService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IWebHostEnvironment Environment
+@attribute [Authorize(Roles = "Engineering,Admin")]
+
+<PageTitle>Create Product - PLM Engineer</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4 mb-16">
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+    
+    <div class="d-flex align-center mb-6">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="@(() => NavManager.NavigateTo("/products"))" Class="mr-2" />
+        <MudText Typo="Typo.h4">Create New Product</MudText>
+    </div>
+
+    <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+        <FluentValidationValidator />
+        
+        <MudGrid>
+            <MudItem xs="12">
+                <MudPaper Elevation="3" Class="pa-6 rounded-lg">
+                    <MudText Typo="Typo.h6" Class="mb-4">Product Information</MudText>
+                    
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_model.Name" Label="Product Name" Required="true" 
+                                          Variant="Variant.Outlined" For="@(() => _model.Name)" MaxLength="255" />
+                        </MudItem>
+                        
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_model.Description" Label="Description" Lines="3" 
+                                          Variant="Variant.Outlined" For="@(() => _model.Description)" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" sm="6">
+                            <MudNumericField @bind-Value="_model.CostPrice" Label="Cost Price" 
+                                             Variant="Variant.Outlined" Adornment="Adornment.Start" 
+                                             AdornmentIcon="@Icons.Material.Filled.CurrencyRupee" 
+                                             For="@(() => _model.CostPrice)" />
+                        </MudItem>
+                        
+                        <MudItem xs="12" sm="6">
+                            <MudNumericField @bind-Value="_model.SalePrice" Label="Sale Price" 
+                                             Variant="Variant.Outlined" Adornment="Adornment.Start" 
+                                             AdornmentIcon="@Icons.Material.Filled.CurrencyRupee" 
+                                             For="@(() => _model.SalePrice)" />
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <div class="d-flex align-center gap-2">
+                                <MudTextField @bind-Value="_model.Attachments" Label="Attachments" 
+                                              Variant="Variant.Outlined" ReadOnly="true" Placeholder="No file uploaded" />
+                                <MudFileUpload T="IBrowserFile" OnFilesChanged="UploadFiles">
+                                    <ActivatorContent>
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                                            Upload
+                                        </MudButton>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudNumericField Value="1" Label="Version" Variant="Variant.Outlined" ReadOnly="true" />
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-end gap-2 mt-4">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" 
+                           OnClick="@(() => NavManager.NavigateTo("/products"))">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" 
+                           Color="Color.Primary" Disabled="@_isSubmitting" 
+                           StartIcon="@Icons.Material.Filled.Save">
+                    @if (_isSubmitting)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Creating...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Create Product</MudText>
+                    }
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudContainer>
+
+@code {
+    private const long MaxFileSize = 10 * 1024 * 1024;
+    private static readonly HashSet<string> AllowedExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx", ".xls", ".xlsx"
+    };
+
+    private ProductCreateDto _model = new();
+    private bool _isSubmitting = false;
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override void OnInitialized()
+    {
+        _breadcrumbs.Add(new BreadcrumbItem("Dashboard", href: "/"));
+        _breadcrumbs.Add(new BreadcrumbItem("Products", href: "/products"));
+        _breadcrumbs.Add(new BreadcrumbItem("Create", href: null, disabled: true));
+    }
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            _isSubmitting = true;
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "system";
+            var userName = user.Identity?.Name ?? "Administrator";
+
+            var result = await ProductService.CreateAsync(_model, userId, userName);
+            Snackbar.Add("Product created successfully (Direct Entry)", Severity.Success);
+            
+            NavManager.NavigateTo($"/products/{result.Id}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error creating product: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file == null)
+            {
+                return;
+            }
+
+            if (file.Size > MaxFileSize)
+            {
+                Snackbar.Add("File size must be 10 MB or less.", Severity.Warning);
+                return;
+            }
+
+            var extension = Path.GetExtension(file.Name);
+            if (string.IsNullOrWhiteSpace(extension) || !AllowedExtensions.Contains(extension))
+            {
+                Snackbar.Add("Unsupported file type.", Severity.Warning);
+                return;
+            }
+
+            var uploadsFolder = Path.Combine(Environment.WebRootPath, "uploads", "products");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var storedFileName = $"{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
+            var fullPath = Path.Combine(uploadsFolder, storedFileName);
+
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.OpenReadStream(MaxFileSize).CopyToAsync(stream);
+
+            _model.Attachments = $"/uploads/products/{storedFileName}";
+            Snackbar.Add($"Attachment '{file.Name}' uploaded.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Attachment upload failed: {ex.Message}", Severity.Error);
+        }
+    }
+}

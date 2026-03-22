@@ -12,7 +12,12 @@
 <PageTitle>Create Change Order - PLM Engineer</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4 mb-16">
-    <MudText Typo="Typo.h4" GutterBottom="true">Create Engineering Change Order</MudText>
+    <div class="plm-page-header">
+        <div>
+            <MudText Typo="Typo.h4" Class="plm-page-title">Create Engineering Change Order</MudText>
+            <MudText Class="plm-page-subtitle">Draft a controlled change request with effective date and target scope.</MudText>
+        </div>
+    </div>
 
     <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
         <FluentValidationValidator />
@@ -20,7 +25,7 @@
         <MudGrid>
             <!-- Core Details -->
             <MudItem xs="12" md="8">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Change Order Details</MudText>
@@ -46,7 +51,7 @@
 
             <!-- Target Selection -->
             <MudItem xs="12" md="4">
-                <MudCard Elevation="3" Class="rounded-lg h-100">
+                <MudCard Elevation="0" Class="rounded-lg h-100 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Target Entity</MudText>
@@ -99,7 +104,7 @@
 
             <!-- Proposed Changes -->
             <MudItem xs="12">
-                <MudCard Elevation="3" Class="rounded-lg mt-4">
+                <MudCard Elevation="0" Class="rounded-lg mt-4 plm-surface">
                     <MudCardHeader>
                         <CardHeaderContent>
                             <MudText Typo="Typo.h6">Proposed Changes</MudText>
@@ -249,13 +254,12 @@
             }
             else
             {
-                await LoadBoMsForProduct(new[] { ProductId.Value }).ContinueWith(async t => {
-                    if (BoMId.HasValue)
-                    {
-                        _model.BoMId = BoMId.Value;
-                        await LoadBoMDetails(new int?[] { BoMId.Value });
-                    }
-                });
+                await LoadBoMsForProduct(new[] { ProductId.Value });
+                if (BoMId.HasValue)
+                {
+                    _model.BoMId = BoMId.Value;
+                    await LoadBoMDetails(new int?[] { BoMId.Value });
+                }
             }
         }
     }

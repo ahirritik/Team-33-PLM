@@ -478,7 +478,8 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\refint
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.pdb
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\PLM.Web.genruntimeconfig.cache
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\ref\PLM.Web.dll
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t3497o1072-{0}-uqokd4twlv-uqokd4twlv.gz
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\bejcxxn3wa-{0}-uqokd4twlv-uqokd4twlv.gz
-C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t26yu0xig7-{0}-0ecojmw2mn-0ecojmw2mn.gz
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\7tg3xwmlpr-{0}-034rngvvml-034rngvvml.gz
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\obj\Debug\net10.0\compressed\t26yu0xig7-{0}-xalwottndz-xalwottndz.gz

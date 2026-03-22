@@ -241,7 +241,7 @@
             _model.Type = type;
         }
         
-        var productResult = await ProductService.GetPagedAsync(1, 100);
+        var productResult = await ProductService.GetPagedAsync(1, 500);
         _products = productResult.Items.ToList();
         
         if (ProductId.HasValue)

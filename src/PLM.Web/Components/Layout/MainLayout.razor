@@ -11,7 +11,7 @@
         <Authorized>
             @if (!IsAccountPage)
             {
-                <MudAppBar Elevation="0" Color="Color.Primary" Fixed="true" Class="plm-appbar">
+                <MudAppBar Elevation="0" Color="Color.Primary" Fixed="false" Class="plm-appbar">
                     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
                     <MudText Typo="Typo.h5" Class="ml-3">PLM Engineer</MudText>
                     <MudSpacer />

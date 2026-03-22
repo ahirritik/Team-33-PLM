@@ -47,7 +47,9 @@
                 </CellTemplate>
             </PropertyColumn>
             <PropertyColumn Property="x => x.CurrentVersionNumber" Title="Version" Sortable="true">
-                <CellTemplate>v@context.Item.CurrentVersionNumber</CellTemplate>
+                <CellTemplate>
+                    v@(context.Item.CurrentVersionNumber)
+                </CellTemplate>
             </PropertyColumn>
             <TemplateColumn Title="Status">
                 <CellTemplate>
@@ -85,7 +87,7 @@
 
     private async Task LoadDataAsync()
     {
-        var result = await BoMService.GetPagedAsync(1, 100, _searchString);
+        var result = await BoMService.GetPagedAsync(1, 500, _searchString);
         _boms = result.Items.ToList();
     }
 

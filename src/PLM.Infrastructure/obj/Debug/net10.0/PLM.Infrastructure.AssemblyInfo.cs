@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PLM.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec40708dd10d341f9a2e65bfb374c58813999c97")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+64276fd5bd661f892a188428fd3c08336415f4df")]
 [assembly: System.Reflection.AssemblyProductAttribute("PLM.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PLM.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

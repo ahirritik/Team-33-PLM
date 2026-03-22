@@ -163,7 +163,7 @@
         _breadcrumbs.Add(new BreadcrumbItem("Bills of Material", href: "/boms"));
         _breadcrumbs.Add(new BreadcrumbItem("Create", href: null, disabled: true));
 
-        var result = await ProductService.GetPagedAsync(1, 100);
+        var result = await ProductService.GetPagedAsync(1, 500);
         _products = result.Items.ToList();
     }
 

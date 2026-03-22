@@ -74,7 +74,7 @@
 
     private async Task LoadDataAsync()
     {
-        var result = await ProductService.GetPagedAsync(1, 100, _searchString);
+        var result = await ProductService.GetPagedAsync(1, 500, _searchString);
         _products = result.Items.ToList();
     }
 

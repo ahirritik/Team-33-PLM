@@ -3,16 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{C82FC4B1-4606-1563-5A48-DE12E9175F2B}|src\\PLM.Infrastructure\\PLM.Infrastructure.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.infrastructure\\repositories\\bomrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C82FC4B1-4606-1563-5A48-DE12E9175F2B}|src\\PLM.Infrastructure\\PLM.Infrastructure.csproj|solutionrelative:src\\plm.infrastructure\\repositories\\bomrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\layout\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\wwwroot\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\wwwroot\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\products\\productslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\products\\productslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\boms\\bomslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\boms\\bomslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\ecos\\ecolist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\ecos\\ecolist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\ecos\\ecocreate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\ecos\\ecocreate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|c:\\users\\avadi\\documents\\github\\team-33-plm\\src\\plm.web\\components\\pages\\boms\\bomcreate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{043EF3C0-16A4-7C9F-FFE8-1A3199F87666}|src\\PLM.Web\\PLM.Web.csproj|solutionrelative:src\\plm.web\\components\\pages\\boms\\bomcreate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,27 +51,79 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MainLayout.razor",
-              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
-              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
-              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
-              "RelativeToolTip": "src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAmwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-22T02:20:38.835Z",
+              "Title": "BoMRepository.cs",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Infrastructure\\Repositories\\BoMRepository.cs",
+              "RelativeDocumentMoniker": "src\\PLM.Infrastructure\\Repositories\\BoMRepository.cs",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Infrastructure\\Repositories\\BoMRepository.cs",
+              "RelativeToolTip": "src\\PLM.Infrastructure\\Repositories\\BoMRepository.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAawDQAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-22T03:29:11.228Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Dashboard.razor",
-              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\Dashboard.razor",
-              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\Dashboard.razor",
-              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\Dashboard.razor",
-              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\Dashboard.razor",
-              "ViewState": "AgIAAEIAAAAAAAAAAAAEwAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "BoMCreate.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\BoMs\\BoMCreate.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\BoMs\\BoMCreate.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\BoMs\\BoMCreate.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\BoMs\\BoMCreate.razor",
+              "ViewState": "AgIAAKUAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-22T02:18:00.828Z",
+              "WhenOpened": "2026-03-22T03:43:05.568Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ECOCreate.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\ECOs\\ECOCreate.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\ECOs\\ECOCreate.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\ECOs\\ECOCreate.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\ECOs\\ECOCreate.razor",
+              "ViewState": "AgIAAPMAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-22T03:43:05.298Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ECOList.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\ECOs\\ECOList.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\ECOs\\ECOList.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\ECOs\\ECOList.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\ECOs\\ECOList.razor",
+              "ViewState": "AgIAAGEAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-22T03:43:04.629Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "BoMsList.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\BoMs\\BoMsList.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\BoMs\\BoMsList.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\BoMs\\BoMsList.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\BoMs\\BoMsList.razor",
+              "ViewState": "AgIAAFcAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-22T03:43:04.03Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ProductsList.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\Products\\ProductsList.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Pages\\Products\\ProductsList.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Pages\\Products\\ProductsList.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Pages\\Products\\ProductsList.razor",
+              "ViewState": "AgIAAEwAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-22T03:43:03.447Z",
               "EditorCaption": ""
             },
             {
@@ -62,9 +134,22 @@
               "RelativeDocumentMoniker": "src\\PLM.Web\\wwwroot\\app.css",
               "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\wwwroot\\app.css",
               "RelativeToolTip": "src\\PLM.Web\\wwwroot\\app.css",
-              "ViewState": "AgIAAEQAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAJEAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-03-22T02:14:52.769Z",
+              "WhenOpened": "2026-03-22T03:42:49.611Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeDocumentMoniker": "src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
+              "ToolTip": "C:\\Users\\avadi\\Documents\\GitHub\\Team-33-PLM\\src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
+              "RelativeToolTip": "src\\PLM.Web\\Components\\Layout\\MainLayout.razor",
+              "ViewState": "AgIAABMAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-22T03:42:31.615Z",
               "EditorCaption": ""
             }
           ]

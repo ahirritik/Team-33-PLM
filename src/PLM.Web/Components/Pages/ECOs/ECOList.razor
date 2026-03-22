@@ -95,7 +95,7 @@
 
     private async Task LoadDataAsync()
     {
-        var result = await ECOService.GetPagedAsync(1, 100, null, null);
+        var result = await ECOService.GetPagedAsync(1, 500, null, null);
         _ecos = result.Items
             .Where(e => string.IsNullOrWhiteSpace(_searchString) || 
                         e.Title.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||

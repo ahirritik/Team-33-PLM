@@ -140,6 +140,29 @@ a, .btn-link {
     }
 }
 
+@media (max-width: 959.98px) {
+    .plm-main-content {
+        padding-top: 1.15rem !important;
+    }
+}
+
+.plm-appbar {
+    position: sticky !important;
+    top: 0;
+    z-index: 1200;
+}
+
+.plm-page-title {
+    display: block;
+    line-height: 1.15;
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+.mud-container {
+    overflow: visible !important;
+}
+
 .plm-surface {
     background: #fff;
     border: 1px solid rgba(99,102,241,.1);

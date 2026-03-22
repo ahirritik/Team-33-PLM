@@ -8,6 +8,7 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\di
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\js\attachmentUpload.js
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\Components\Layout\ReconnectModal.razor.js
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
@@ -51,6 +52,7 @@ C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\di
 C:\Users\avadi\Documents\GitHub\Team-33-PLM\src\PLM.Web\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
 wwwroot\app.css
 wwwroot\favicon.png
+wwwroot\js\attachmentUpload.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
